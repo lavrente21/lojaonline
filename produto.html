@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sérum de vitamina C 20% — Lúmina</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
+
+<header class="principal">
+  <div class="header-linha">
+    <a href="index.html" class="logo">Lúmina</a>
+    <nav class="menu-principal">
+      <ul>
+        <li class="item-menu"><a href="categoria.html?cat=skincare" class="link-menu">Skincare</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=hair" class="link-menu">Hair care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=body" class="link-menu">Body care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=maquilhagem" class="link-menu">Maquilhagem</a></li>
+        <li class="item-menu"><a href="blog.html" class="link-menu">Blog</a></li>
+      </ul>
+    </nav>
+    <div class="acoes-header">
+      <form class="busca-form" action="busca-resultados.html">
+        <i>🔍</i>
+        <input type="text" name="q" placeholder="Procurar produtos...">
+      </form>
+      <a href="conta/login.html" aria-label="Conta">👤</a>
+      <button class="botao-carrinho" aria-label="Carrinho">
+        🛍️<span class="contador-carrinho">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="migalha"><a href="index.html">Home</a> / <a href="loja.html">Loja</a> / <a href="categoria.html?cat=skincare">Skincare</a> / <span>Sérum de vitamina C 20%</span></nav>
+
+<div class="layout-produto">
+  <div>
+    <div class="galeria-principal"><div class="frasco-grande"></div></div>
+    <div class="miniaturas">
+      <div class="ativa"></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+
+  <div class="info-produto-completa">
+    <div class="categoria-produto" id="produto-categoria">A carregar...</div>
+    <h1 id="produto-nome">A carregar produto...</h1>
+    <div class="avaliacao-resumo">★★★★★ 4.8 (132 avaliações)</div>
+    <div class="preco-principal" id="produto-preco">—</div>
+    <p class="descricao-curta">Sérum concentrado que ajuda a uniformizar o tom da pele e a reduzir o aspeto de cansaço. Textura leve, de rápida absorção, indicado para uso diário.</p>
+
+    <div class="seletor-variacao">
+      <h4>Tamanho</h4>
+      <div class="opcoes-variacao">
+        <button class="opcao-variacao selecionada">15 ml</button>
+        <button class="opcao-variacao">30 ml</button>
+        <button class="opcao-variacao">50 ml</button>
+      </div>
+    </div>
+
+    <div class="linha-compra">
+      <div class="seletor-quantidade">
+        <button class="diminuir">−</button>
+        <span>1</span>
+        <button class="aumentar">+</button>
+      </div>
+      <button class="btn btn-primario botao-add-produto" id="botao-add-produto" data-id="" data-nome="" data-preco="" style="flex:1">Adicionar ao carrinho</button>
+    </div>
+    <script>
+      const parametrosURL = new URLSearchParams(window.location.search);
+      const idProdutoAtual = parametrosURL.get('id') || 'prod_001';
+      (async () => {
+        try{
+          const p = await apiFetch('/produtos/' + idProdutoAtual);
+          document.title = p.nome + ' — Lúmina';
+          document.getElementById('produto-nome').textContent = p.nome;
+          document.getElementById('produto-categoria').textContent = p.categoria || '';
+          document.getElementById('produto-preco').textContent = p.precoVendaEUR.toFixed(2) + ' €';
+          const botao = document.getElementById('botao-add-produto');
+          botao.dataset.id = p.id; botao.dataset.nome = p.nome; botao.dataset.preco = p.precoVendaEUR;
+        }catch(e){
+          document.getElementById('produto-nome').textContent = 'Produto não encontrado';
+          console.error(e.message);
+        }
+      })();
+    </script>
+
+    <div class="selos-produto">
+      <span class="selo">Vegano</span>
+      <span class="selo">Cruelty-free</span>
+      <span class="selo">Sem parabenos</span>
+      <span class="selo">Dermatologicamente testado</span>
+    </div>
+
+    <div class="abas-produto">
+      <div class="botoes-aba">
+        <button class="botao-aba ativa" data-aba="modo-uso">Modo de uso</button>
+        <button class="botao-aba" data-aba="ingredientes">Ingredientes</button>
+        <button class="botao-aba" data-aba="avaliacoes">Avaliações</button>
+      </div>
+
+      <div class="conteudo-aba ativa" data-aba="modo-uso">
+        <p>Aplicar de manhã, após a limpeza da pele e antes do hidratante. Massajar suavemente até absorção completa. Usar sempre proteção solar durante o dia.</p>
+      </div>
+
+      <div class="conteudo-aba" data-aba="ingredientes">
+        <p style="margin-bottom:10px">Lista de ingredientes (INCI):</p>
+        <p>Aqua, Ascorbic Acid, Propanediol, Glycerin, Sodium Hyaluronate, Tocopherol, Ferulic Acid, Xanthan Gum, Citric Acid, Sodium Hydroxide.</p>
+      </div>
+
+      <div class="conteudo-aba" data-aba="avaliacoes">
+        <p style="margin-bottom:14px"><strong>Marta S.</strong> — ★★★★★<br>A minha pele ficou visivelmente mais luminosa em duas semanas.</p>
+        <p style="margin-bottom:14px"><strong>João P.</strong> — ★★★★☆<br>Boa textura, não passa oleosa. Só gostava que durasse mais.</p>
+        <p><strong>Rita A.</strong> — ★★★★★<br>Já é o terceiro frasco que compro, recomendo muito.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="secao-relacionados">
+  <div class="cabecalho-secao" style="max-width:none;margin:0 0 30px;padding:0">
+    <h2>Complete a sua rotina</h2>
+  </div>
+  <div class="grade-produtos">
+    <a href="produto.html" class="cartao-produto">
+      <div class="imagem-produto"><div class="mini-frasco"></div></div>
+      <div class="info-produto">
+        <div class="categoria-produto">Skincare · Limpeza</div>
+        <h3>Gel de limpeza suave</h3>
+        <div class="preco">18,50 €</div>
+      </div>
+    </a>
+    <a href="produto.html" class="cartao-produto">
+      <div class="imagem-produto"><div class="mini-frasco"></div></div>
+      <div class="info-produto">
+        <div class="categoria-produto">Skincare · Anti-idade</div>
+        <h3>Creme de noite com retinol</h3>
+        <div class="preco">36,00 €</div>
+      </div>
+    </a>
+    <a href="produto.html" class="cartao-produto">
+      <div class="imagem-produto"><span class="selo-produto">Vegano</span><div class="mini-frasco"></div></div>
+      <div class="info-produto">
+        <div class="categoria-produto">Skincare · Proteção</div>
+        <h3>Protetor solar toque seco FPS50</h3>
+        <div class="preco">22,00 €</div>
+      </div>
+    </a>
+    <a href="produto.html" class="cartao-produto">
+      <div class="imagem-produto"><div class="mini-frasco"></div></div>
+      <div class="info-produto">
+        <div class="categoria-produto">Skincare · Contorno</div>
+        <h3>Creme de olhos com cafeína</h3>
+        <div class="preco">21,50 €</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<footer class="rodape">
+  <div class="grade-rodape">
+    <div>
+      <div class="logo" style="margin-bottom:14px">Lúmina</div>
+      <p style="font-size:13.5px;color:#5B4C43;max-width:260px">Cuidado com a pele, cabelo e corpo, com fórmulas claras e ingredientes transparentes.</p>
+    </div>
+    <div>
+      <h4>Loja</h4>
+      <ul>
+        <li><a href="loja.html">Todos os produtos</a></li>
+        <li><a href="categoria.html?cat=skincare">Skincare</a></li>
+        <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
+        <li><a href="kits.html">Kits</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Apoio ao cliente</h4>
+      <ul>
+        <li><a href="contato.html">Contacto</a></li>
+        <li><a href="faq.html">Perguntas frequentes</a></li>
+        <li><a href="rastrear-pedido.html">Rastrear encomenda</a></li>
+        <li><a href="politica-troca.html">Trocas e devoluções</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="politica-privacidade.html">Privacidade</a></li>
+        <li><a href="politica-cookies.html">Cookies</a></li>
+        <li><a href="termos-de-uso.html">Termos de uso</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="rodape-base">
+    <span>© 2026 Lúmina. Todos os direitos reservados.</span>
+    <span>Visa · Mastercard · PayPal · Klarna</span>
+  </div>
+</footer>
+
+<div class="overlay-carrinho"></div>
+<div class="drawer-carrinho">
+  <div class="cabecalho-drawer">
+    <h3 style="font-size:18px">O seu carrinho</h3>
+    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
+  </div>
+  <div class="itens-drawer"></div>
+  <div class="rodape-drawer">
+    <div class="linha-subtotal"><span>Subtotal</span><span class="valor-subtotal">€0.00</span></div>
+    <a href="checkout.html" class="btn btn-primario" style="width:100%;text-align:center;display:block">Finalizar compra</a>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Lúmina</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
+
+<header class="principal">
+  <div class="header-linha">
+    <a href="index.html" class="logo">Lúmina</a>
+    <nav class="menu-principal">
+      <ul>
+        <li class="item-menu"><a href="categoria.html?cat=skincare" class="link-menu">Skincare</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=hair" class="link-menu">Hair care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=body" class="link-menu">Body care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=maquilhagem" class="link-menu">Maquilhagem</a></li>
+        <li class="item-menu"><a href="blog.html" class="link-menu">Blog</a></li>
+      </ul>
+    </nav>
+    <div class="acoes-header">
+      <form class="busca-form" action="busca-resultados.html">
+        <i>🔍</i>
+        <input type="text" name="q" placeholder="Procurar produtos...">
+      </form>
+      <a href="conta/login.html" aria-label="Conta">👤</a>
+      <button class="botao-carrinho" aria-label="Carrinho">
+        🛍️<span class="contador-carrinho">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="conteudo-simples" style="max-width:var(--max);text-align:center;padding-top:50px;padding-bottom:10px">
+<h1>Blog Lúmina</h1>
+<p style="max-width:520px;margin:0 auto">Dicas de rotina, ingredientes explicados e novidades do mundo da beleza.</p>
+</div>
+<div class="grade-blog"><a href="artigo.html" class="cartao-blog">
+  <div class="capa-blog"></div>
+  <div class="corpo-blog"><div class="categoria-blog">Skincare</div><h3>Como montar a rotina de skincare perfeita</h3><p>Passo a passo simples para organizar limpeza, tratamento e proteção.</p></div>
+</a>
+<a href="artigo.html" class="cartao-blog">
+  <div class="capa-blog"></div>
+  <div class="corpo-blog"><div class="categoria-blog">Ingredientes</div><h3>Vitamina C vs Retinol: qual escolher?</h3><p>Entenda as diferenças e como combinar estes dois ativos sem irritar a pele.</p></div>
+</a>
+<a href="artigo.html" class="cartao-blog">
+  <div class="capa-blog"></div>
+  <div class="corpo-blog"><div class="categoria-blog">Maquilhagem</div><h3>Como escolher o tom certo de base</h3><p>Dicas práticas para testar e acertar no tom à primeira compra.</p></div>
+</a>
+<a href="artigo.html" class="cartao-blog">
+  <div class="capa-blog"></div>
+  <div class="corpo-blog"><div class="categoria-blog">Hair care</div><h3>Frizz: porque acontece e como controlar</h3><p>As causas mais comuns do frizz e os produtos que realmente ajudam.</p></div>
+</a>
+<a href="artigo.html" class="cartao-blog">
+  <div class="capa-blog"></div>
+  <div class="corpo-blog"><div class="categoria-blog">Body care</div><h3>Rotina de corpo para os dias frios</h3><p>Como manter a pele do corpo hidratada durante o inverno.</p></div>
+</a>
+<a href="artigo.html" class="cartao-blog">
+  <div class="capa-blog"></div>
+  <div class="corpo-blog"><div class="categoria-blog">Sustentabilidade</div><h3>O que significa realmente 'cruelty-free'</h3><p>Explicamos o que este selo garante e como identificá-lo.</p></div>
+</a></div>
+<footer class="rodape">
+  <div class="grade-rodape">
+    <div>
+      <div class="logo" style="margin-bottom:14px">Lúmina</div>
+      <p style="font-size:13.5px;color:#5B4C43;max-width:260px">Cuidado com a pele, cabelo e corpo, com fórmulas claras e ingredientes transparentes.</p>
+    </div>
+    <div>
+      <h4>Loja</h4>
+      <ul>
+        <li><a href="loja.html">Todos os produtos</a></li>
+        <li><a href="categoria.html?cat=skincare">Skincare</a></li>
+        <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
+        <li><a href="kits.html">Kits</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Apoio ao cliente</h4>
+      <ul>
+        <li><a href="contato.html">Contacto</a></li>
+        <li><a href="faq.html">Perguntas frequentes</a></li>
+        <li><a href="rastrear-pedido.html">Rastrear encomenda</a></li>
+        <li><a href="politica-troca.html">Trocas e devoluções</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="politica-privacidade.html">Privacidade</a></li>
+        <li><a href="politica-cookies.html">Cookies</a></li>
+        <li><a href="termos-de-uso.html">Termos de uso</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="rodape-base">
+    <span>© 2026 Lúmina. Todos os direitos reservados.</span>
+    <span>Visa · Mastercard · PayPal · Klarna</span>
+  </div>
+</footer>
+
+<div class="overlay-carrinho"></div>
+<div class="drawer-carrinho">
+  <div class="cabecalho-drawer">
+    <h3 style="font-size:18px">O seu carrinho</h3>
+    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
+  </div>
+  <div class="itens-drawer"></div>
+  <div class="rodape-drawer">
+    <div class="linha-subtotal"><span>Subtotal</span><span class="valor-subtotal">€0.00</span></div>
+    <a href="checkout.html" class="btn btn-primario" style="width:100%;text-align:center;display:block">Finalizar compra</a>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

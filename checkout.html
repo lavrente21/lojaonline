@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Lúmina</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
+
+<header class="principal">
+  <div class="header-linha">
+    <a href="index.html" class="logo">Lúmina</a>
+    <nav class="menu-principal">
+      <ul>
+        <li class="item-menu"><a href="categoria.html?cat=skincare" class="link-menu">Skincare</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=hair" class="link-menu">Hair care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=body" class="link-menu">Body care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=maquilhagem" class="link-menu">Maquilhagem</a></li>
+        <li class="item-menu"><a href="blog.html" class="link-menu">Blog</a></li>
+      </ul>
+    </nav>
+    <div class="acoes-header">
+      <form class="busca-form" action="busca-resultados.html">
+        <i>🔍</i>
+        <input type="text" name="q" placeholder="Procurar produtos...">
+      </form>
+      <a href="conta/login.html" aria-label="Conta">👤</a>
+      <button class="botao-carrinho" aria-label="Carrinho">
+        🛍️<span class="contador-carrinho">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="indicador-etapas">
+  <span>Carrinho</span> → <span class="ativo">Dados</span> → <span>Pagamento</span> → <span>Confirmação</span>
+</div>
+<div class="layout-checkout">
+  <div>
+    <div class="cartao-conta">
+      <h2>Dados de contacto</h2>
+      <div class="formulario" style="max-width:none">
+        <div class="linha-formulario">
+          <div class="campo-formulario"><label>Nome</label><input type="text" id="ck-nome" required></div>
+          <div class="campo-formulario"><label>Apelido</label><input type="text" id="ck-apelido"></div>
+        </div>
+        <div class="campo-formulario"><label>E-mail</label><input type="email" id="ck-email" required></div>
+        <div class="campo-formulario"><label>Telefone <span id="ck-telefone-obrigatorio" style="color:var(--terracota-escuro)"></span></label><input type="tel" id="ck-telefone" placeholder="+244 9XX XXX XXX"></div>
+      </div>
+    </div>
+    <div class="cartao-conta">
+      <h2>Morada de entrega</h2>
+      <div class="formulario" style="max-width:none">
+        <div class="campo-formulario"><label>País</label>
+          <select id="ck-pais">
+            <option value="PT">Portugal</option>
+            <option value="ES">Espanha</option>
+            <option value="FR">França</option>
+            <option value="DE">Alemanha</option>
+            <option value="US">Estados Unidos</option>
+            <option value="AO">Angola</option>
+          </select>
+        </div>
+        <div class="linha-formulario">
+          <div class="campo-formulario"><label>Cidade</label><input type="text" id="ck-cidade" required></div>
+          <div class="campo-formulario"><label>Código postal</label><input type="text" id="ck-codigo-postal"></div>
+        </div>
+        <div class="campo-formulario"><label>Morada</label><input type="text" id="ck-morada" required></div>
+      </div>
+    </div>
+    <div class="cartao-conta">
+      <h2>Forma de pagamento</h2>
+      <div class="opcoes-pagamento" id="ck-opcoes-pagamento">
+        <label class="opcao-pagamento"><input type="radio" name="pagamento" value="eur" checked> Cartão de crédito/débito, PayPal (EUR)</label>
+        <label class="opcao-pagamento" id="ck-opcao-aoa" style="display:none">
+          <input type="radio" name="pagamento" value="aoa"> Multicaixa Express — pagar em Kwanza (AOA)
+        </label>
+      </div>
+      <p id="ck-nota-aoa" style="display:none;font-size:12.5px;color:#8A7A70;margin-top:8px">
+        Como o destino é Angola, o pedido será enviado primeiro para o nosso agente de carga e depois reencaminhado — o prazo de entrega é mais longo do que para a Europa/EUA.
+      </p>
+    </div>
+    <p id="ck-erro" style="display:none;color:#B14B33;font-size:13.5px;margin-top:10px"></p>
+  </div>
+  <div class="resumo-checkout">
+    <h2 style="font-size:18px;margin-bottom:16px">Resumo do pedido</h2>
+    <div id="ck-lista-itens"></div>
+    <div class="linha-resumo"><span>Portes</span><span id="ck-portes">4,90 €</span></div>
+    <div class="linha-resumo total"><span>Total</span><span id="ck-total">—</span></div>
+    <div class="linha-resumo" id="ck-total-aoa" style="display:none;color:#8A7A70;font-size:13px"><span>Equivalente</span><span></span></div>
+    <button id="ck-botao-confirmar" class="btn btn-primario" style="width:100%;text-align:center;display:block;margin-top:18px">Confirmar pedido</button>
+  </div>
+</div>
+
+<script>
+  const PORTES_EUR = 4.90;
+
+  function renderizarResumoCheckout(){
+    const itens = lerCarrinho();
+    const container = document.getElementById('ck-lista-itens');
+    if(itens.length === 0){
+      container.innerHTML = '<p style="font-size:13.5px;color:#8A7A70">O seu carrinho está vazio.</p>';
+    } else {
+      container.innerHTML = itens.map(i => `<div class="linha-resumo"><span>${i.nome} ×${i.quantidade}</span><span>${(i.preco*i.quantidade).toFixed(2)} €</span></div>`).join('');
+    }
+    const subtotal = itens.reduce((s,i)=>s+i.preco*i.quantidade,0);
+    const total = itens.length ? subtotal + PORTES_EUR : 0;
+    document.getElementById('ck-total').textContent = total.toFixed(2) + ' €';
+    return total;
+  }
+
+  function alternarPagamentoConformePais(){
+    const pais = document.getElementById('ck-pais').value;
+    const opcaoAoa = document.getElementById('ck-opcao-aoa');
+    const notaAoa = document.getElementById('ck-nota-aoa');
+    const telObrigatorio = document.getElementById('ck-telefone-obrigatorio');
+    if(pais === 'AO'){
+      opcaoAoa.style.display = 'flex';
+      notaAoa.style.display = 'block';
+      document.querySelector('input[name="pagamento"][value="aoa"]').checked = true;
+    } else {
+      opcaoAoa.style.display = 'none';
+      notaAoa.style.display = 'none';
+      document.querySelector('input[name="pagamento"][value="eur"]').checked = true;
+    }
+    atualizarObrigatoriedadeTelefone();
+  }
+
+  function atualizarObrigatoriedadeTelefone(){
+    const metodo = document.querySelector('input[name="pagamento"]:checked')?.value;
+    document.getElementById('ck-telefone-obrigatorio').textContent = metodo === 'aoa' ? '(obrigatório para Multicaixa)' : '';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderizarResumoCheckout();
+    document.getElementById('ck-pais').addEventListener('change', alternarPagamentoConformePais);
+    document.getElementById('ck-opcoes-pagamento').addEventListener('change', atualizarObrigatoriedadeTelefone);
+
+    document.getElementById('ck-botao-confirmar').addEventListener('click', async () => {
+      const erroEl = document.getElementById('ck-erro');
+      erroEl.style.display = 'none';
+      const itens = lerCarrinho();
+      if(itens.length === 0){ erroEl.textContent = 'O seu carrinho está vazio.'; erroEl.style.display='block'; return; }
+
+      const nome = document.getElementById('ck-nome').value.trim();
+      const email = document.getElementById('ck-email').value.trim();
+      const cidade = document.getElementById('ck-cidade').value.trim();
+      const morada = document.getElementById('ck-morada').value.trim();
+      const codigoPostal = document.getElementById('ck-codigo-postal').value.trim();
+      const pais = document.getElementById('ck-pais').value;
+      const telefone = document.getElementById('ck-telefone').value.trim();
+      const metodo = document.querySelector('input[name="pagamento"]:checked').value;
+
+      if(!nome || !email || !cidade || !morada){
+        erroEl.textContent = 'Preencha nome, e-mail, cidade e morada.'; erroEl.style.display='block'; return;
+      }
+      if(metodo === 'aoa' && !telefone){
+        erroEl.textContent = 'O telefone é obrigatório para pagar com Multicaixa Express.'; erroEl.style.display='block'; return;
+      }
+
+      const corpo = {
+        itens: itens.map(i => ({ produtoId: i.produtoId, quantidade: i.quantidade })),
+        moradaEntrega: { linha1: morada, cidade, codigoPostal, pais },
+        moeda: metodo === 'aoa' ? 'AOA' : 'EUR',
+        telefoneCliente: telefone || undefined
+      };
+
+      const botao = document.getElementById('ck-botao-confirmar');
+      botao.textContent = 'A processar...'; botao.disabled = true;
+      try{
+        const resultado = await apiFetch('/checkout', { method: 'POST', body: JSON.stringify(corpo) });
+        localStorage.removeItem('lumina_carrinho');
+        const params = new URLSearchParams({
+          numero: resultado.numeroPedido,
+          totalEUR: resultado.totalEUR,
+          totalAOA: resultado.totalAOA || '',
+          rota: resultado.rotaEnvio,
+          moeda: corpo.moeda,
+          idCobranca: resultado.pagamento.idCobranca || ''
+        });
+        window.location.href = 'confirmacao.html?' + params.toString();
+      }catch(e){
+        erroEl.textContent = 'Não foi possível concluir a compra: ' + e.message + ' (confirme que o backend está a correr em localhost:3000)';
+        erroEl.style.display = 'block';
+        botao.textContent = 'Confirmar pedido'; botao.disabled = false;
+      }
+    });
+  });
+</script>
+
+<footer class="rodape">
+  <div class="grade-rodape">
+    <div>
+      <div class="logo" style="margin-bottom:14px">Lúmina</div>
+      <p style="font-size:13.5px;color:#5B4C43;max-width:260px">Cuidado com a pele, cabelo e corpo, com fórmulas claras e ingredientes transparentes.</p>
+    </div>
+    <div>
+      <h4>Loja</h4>
+      <ul>
+        <li><a href="loja.html">Todos os produtos</a></li>
+        <li><a href="categoria.html?cat=skincare">Skincare</a></li>
+        <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
+        <li><a href="kits.html">Kits</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Apoio ao cliente</h4>
+      <ul>
+        <li><a href="contato.html">Contacto</a></li>
+        <li><a href="faq.html">Perguntas frequentes</a></li>
+        <li><a href="rastrear-pedido.html">Rastrear encomenda</a></li>
+        <li><a href="politica-troca.html">Trocas e devoluções</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="politica-privacidade.html">Privacidade</a></li>
+        <li><a href="politica-cookies.html">Cookies</a></li>
+        <li><a href="termos-de-uso.html">Termos de uso</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="rodape-base">
+    <span>© 2026 Lúmina. Todos os direitos reservados.</span>
+    <span>Visa · Mastercard · PayPal · Klarna</span>
+  </div>
+</footer>
+
+<div class="overlay-carrinho"></div>
+<div class="drawer-carrinho">
+  <div class="cabecalho-drawer">
+    <h3 style="font-size:18px">O seu carrinho</h3>
+    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
+  </div>
+  <div class="itens-drawer"></div>
+  <div class="rodape-drawer">
+    <div class="linha-subtotal"><span>Subtotal</span><span class="valor-subtotal">€0.00</span></div>
+    <a href="checkout.html" class="btn btn-primario" style="width:100%;text-align:center;display:block">Finalizar compra</a>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

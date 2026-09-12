@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rastrear encomenda — Lúmina</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
+
+<header class="principal">
+  <div class="header-linha">
+    <a href="index.html" class="logo">Lúmina</a>
+    <nav class="menu-principal">
+      <ul>
+        <li class="item-menu"><a href="categoria.html?cat=skincare" class="link-menu">Skincare</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=hair" class="link-menu">Hair care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=body" class="link-menu">Body care</a></li>
+        <li class="item-menu"><a href="categoria.html?cat=maquilhagem" class="link-menu">Maquilhagem</a></li>
+        <li class="item-menu"><a href="blog.html" class="link-menu">Blog</a></li>
+      </ul>
+    </nav>
+    <div class="acoes-header">
+      <form class="busca-form" action="busca-resultados.html">
+        <i>🔍</i>
+        <input type="text" name="q" placeholder="Procurar produtos...">
+      </form>
+      <a href="conta/login.html" aria-label="Conta">👤</a>
+      <button class="botao-carrinho" aria-label="Carrinho">
+        🛍️<span class="contador-carrinho">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="caixa-central">
+  <h1>Rastrear encomenda</h1>
+  <p class="aviso">Introduza o número da encomenda para ver o estado atual.</p>
+  <div class="formulario">
+    <div class="campo-formulario"><label>Número da encomenda</label><input type="text" id="rt-numero" placeholder="Ex: LUM-48213"></div>
+    <button class="btn btn-primario" style="width:100%" id="rt-botao">Rastrear</button>
+  </div>
+  <div id="rt-resultado" style="margin-top:22px"></div>
+</div>
+<script>
+  const NOMES_ESTADO = {
+    novo: 'Aguarda pagamento', processando: 'Em processamento',
+    enviado_ao_agente: 'Enviado ao agente de carga', a_caminho: 'A caminho',
+    a_caminho_destino_final: 'A caminho do destino final', entregue: 'Entregue'
+  };
+  document.getElementById('rt-botao').addEventListener('click', async () => {
+    const numero = document.getElementById('rt-numero').value.trim();
+    const resultadoEl = document.getElementById('rt-resultado');
+    if(!numero){ return; }
+    resultadoEl.innerHTML = '<p style="font-size:14px;color:#8A7A70">A procurar...</p>';
+    try{
+      const pedido = await apiFetch('/pedidos/rastrear/' + encodeURIComponent(numero));
+      let linhasFornecedor = Object.entries(pedido.fornecedores || {}).map(([forn, dados]) => `
+        <div class="linha-resumo"><span>Fornecedor (${forn})</span><span>${dados.idPedidoFornecedor}</span></div>
+        ${dados.rastreio1 ? `<div class="linha-resumo"><span>Rastreio (fornecedor → agente)</span><span>${dados.rastreio1}</span></div>` : ''}
+        ${dados.rastreio2 ? `<div class="linha-resumo"><span>Rastreio (agente → destino)</span><span>${dados.rastreio2}</span></div>` : ''}
+      `).join('');
+      resultadoEl.innerHTML = `
+        <div class="cartao-conta" style="text-align:left">
+          <h2>Encomenda #${pedido.numeroPedido}</h2>
+          <p style="margin-bottom:14px"><span class="badge-status enviado">${NOMES_ESTADO[pedido.estado] || pedido.estado}</span></p>
+          ${linhasFornecedor || '<p style="font-size:13.5px;color:#8A7A70">Ainda sem informação de fornecedor (aguarda confirmação de pagamento).</p>'}
+        </div>`;
+    }catch(e){
+      resultadoEl.innerHTML = `<p style="color:#B14B33;font-size:14px">Não foi possível encontrar essa encomenda: ${e.message}</p>`;
+    }
+  });
+</script>
+
+<footer class="rodape">
+  <div class="grade-rodape">
+    <div>
+      <div class="logo" style="margin-bottom:14px">Lúmina</div>
+      <p style="font-size:13.5px;color:#5B4C43;max-width:260px">Cuidado com a pele, cabelo e corpo, com fórmulas claras e ingredientes transparentes.</p>
+    </div>
+    <div>
+      <h4>Loja</h4>
+      <ul>
+        <li><a href="loja.html">Todos os produtos</a></li>
+        <li><a href="categoria.html?cat=skincare">Skincare</a></li>
+        <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
+        <li><a href="kits.html">Kits</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Apoio ao cliente</h4>
+      <ul>
+        <li><a href="contato.html">Contacto</a></li>
+        <li><a href="faq.html">Perguntas frequentes</a></li>
+        <li><a href="rastrear-pedido.html">Rastrear encomenda</a></li>
+        <li><a href="politica-troca.html">Trocas e devoluções</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="politica-privacidade.html">Privacidade</a></li>
+        <li><a href="politica-cookies.html">Cookies</a></li>
+        <li><a href="termos-de-uso.html">Termos de uso</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="rodape-base">
+    <span>© 2026 Lúmina. Todos os direitos reservados.</span>
+    <span>Visa · Mastercard · PayPal · Klarna</span>
+  </div>
+</footer>
+
+<div class="overlay-carrinho"></div>
+<div class="drawer-carrinho">
+  <div class="cabecalho-drawer">
+    <h3 style="font-size:18px">O seu carrinho</h3>
+    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
+  </div>
+  <div class="itens-drawer"></div>
+  <div class="rodape-drawer">
+    <div class="linha-subtotal"><span>Subtotal</span><span class="valor-subtotal">€0.00</span></div>
+    <a href="checkout.html" class="btn btn-primario" style="width:100%;text-align:center;display:block">Finalizar compra</a>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
