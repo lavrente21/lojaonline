@@ -1,6 +1,6 @@
 // Ponto único de ligação ao backend. Se mudar o endereço da API (ex: ao
 // publicar em produção), só precisa de alterar esta linha.
-const API_BASE_URL = 'https://lojaonline-backend.onrender.com';
+const API_BASE_URL = 'https://lojaonline-backend.onrender.com/api';
 
 function obterTokenCliente() { return localStorage.getItem('lumina_cliente_token'); }
 function guardarTokenCliente(t) { localStorage.setItem('lumina_cliente_token', t); }
