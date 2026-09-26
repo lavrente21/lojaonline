@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
+<div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
 
 <header class="principal">
   <div class="header-linha">
@@ -24,145 +24,101 @@
     </nav>
     <div class="acoes-header">
       <form class="busca-form" action="busca-resultados.html">
-        <i>🔍</i>
+        <span class="icone-svg" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.2 4.2"></path></svg></span>
         <input type="text" name="q" placeholder="Procurar produtos...">
       </form>
-      <a href="conta/login.html" aria-label="Conta">👤</a>
+      <a href="conta/login.html" class="acao-icone" aria-label="Conta"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.7-3.5 2.9-5.4 6.5-5.4s5.8 1.9 6.5 5.4"></path></svg></a>
       <button class="botao-carrinho" aria-label="Carrinho">
-        🛍️<span class="contador-carrinho">0</span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg><span class="contador-carrinho">0</span>
       </button>
     </div>
   </div>
 </header>
 
-<nav class="migalha"><a href="index.html">Home</a> / <a href="loja.html">Loja</a> / <a href="categoria.html?cat=skincare">Skincare</a> / <span>Sérum de vitamina C 20%</span></nav>
+<div class="migalha"><a href="index.html">Home</a> / <a href="loja.html">Loja</a> / <span id="migalha-produto">Produto</span></div>
 
-<div class="layout-produto">
-  <div>
-    <div class="galeria-principal"><div class="frasco-grande"></div></div>
-    <div class="miniaturas">
-      <div class="ativa"></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </div>
-
-  <div class="info-produto-completa">
-    <div class="categoria-produto" id="produto-categoria">A carregar...</div>
-    <h1 id="produto-nome">A carregar produto...</h1>
-    <div class="avaliacao-resumo">★★★★★ 4.8 (132 avaliações)</div>
-    <div class="preco-principal" id="produto-preco">—</div>
-    <p class="descricao-curta">Sérum concentrado que ajuda a uniformizar o tom da pele e a reduzir o aspeto de cansaço. Textura leve, de rápida absorção, indicado para uso diário.</p>
-
-    <div class="seletor-variacao">
-      <h4>Tamanho</h4>
-      <div class="opcoes-variacao">
-        <button class="opcao-variacao selecionada">15 ml</button>
-        <button class="opcao-variacao">30 ml</button>
-        <button class="opcao-variacao">50 ml</button>
-      </div>
+<main class="pagina-produto-profissional" id="pagina-produto" data-loading="true">
+  <section class="layout-produto">
+    <div class="produto-galeria-coluna">
+      <div class="galeria-principal produto-galeria" id="galeria-principal"><div class="produto-imagem-placeholder"></div></div>
+      <div class="miniaturas" id="miniaturas"></div>
     </div>
 
-    <div class="linha-compra">
-      <div class="seletor-quantidade">
-        <button class="diminuir">−</button>
-        <span>1</span>
-        <button class="aumentar">+</button>
-      </div>
-      <button class="btn btn-primario botao-add-produto" id="botao-add-produto" data-id="" data-nome="" data-preco="" style="flex:1">Adicionar ao carrinho</button>
-    </div>
-    <script>
-      const parametrosURL = new URLSearchParams(window.location.search);
-      const idProdutoAtual = parametrosURL.get('id') || 'prod_001';
-      (async () => {
-        try{
-          const p = await apiFetch('/produtos/' + idProdutoAtual);
-          document.title = p.nome + ' — Lúmina';
-          document.getElementById('produto-nome').textContent = p.nome;
-          document.getElementById('produto-categoria').textContent = p.categoria || '';
-          document.getElementById('produto-preco').textContent = p.precoVendaEUR.toFixed(2) + ' €';
-          const botao = document.getElementById('botao-add-produto');
-          botao.dataset.id = p.id; botao.dataset.nome = p.nome; botao.dataset.preco = p.precoVendaEUR;
-        }catch(e){
-          document.getElementById('produto-nome').textContent = 'Produto não encontrado';
-          console.error(e.message);
-        }
-      })();
-    </script>
+    <div class="info-produto-completa">
+      <div class="categoria-produto" id="produto-categoria">A carregar...</div>
+      <h1 id="produto-nome">A carregar produto...</h1>
+      <div class="avaliacao-resumo profissional-rating" id="rating-resumo" hidden></div>
+      <div class="preco-principal" id="produto-preco">—</div>
+      <p class="descricao-curta" id="produto-descricao"></p>
 
-    <div class="selos-produto">
-      <span class="selo">Vegano</span>
-      <span class="selo">Cruelty-free</span>
-      <span class="selo">Sem parabenos</span>
-      <span class="selo">Dermatologicamente testado</span>
-    </div>
-
-    <div class="abas-produto">
-      <div class="botoes-aba">
-        <button class="botao-aba ativa" data-aba="modo-uso">Modo de uso</button>
-        <button class="botao-aba" data-aba="ingredientes">Ingredientes</button>
-        <button class="botao-aba" data-aba="avaliacoes">Avaliações</button>
+      <div class="seletor-variacao" id="bloco-variantes" hidden>
+        <h4 id="nome-opcao-variante">Opção</h4>
+        <div class="opcoes-variacao" id="opcoes-variacao"></div>
       </div>
 
-      <div class="conteudo-aba ativa" data-aba="modo-uso">
-        <p>Aplicar de manhã, após a limpeza da pele e antes do hidratante. Massajar suavemente até absorção completa. Usar sempre proteção solar durante o dia.</p>
+      <div class="stock-produto" id="stock-produto"></div>
+
+      <div class="linha-compra">
+        <div class="seletor-quantidade">
+          <button class="diminuir" type="button" aria-label="Diminuir quantidade"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14"></path></svg></button>
+          <span id="quantidade-produto">1</span>
+          <button class="aumentar" type="button" aria-label="Aumentar quantidade"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"></path></svg></button>
+        </div>
+        <button class="btn btn-primario botao-add-produto" id="botao-add-produto" type="button" disabled style="flex:1">Adicionar ao carrinho</button>
+      </div>
+      <div class="mensagem-produto" id="mensagem-produto" role="status"></div>
+
+      <div class="selos-produto selos-profissionais">
+        <div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 9h18M7 15h4"></path></svg><span><strong>Pagamento seguro</strong><small>Pagamento processado por parceiros certificados</small></span></div>
+        <div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h11v11H3zM14 9h4l3 3v5h-7z"></path><circle cx="7" cy="19" r="1.5"></circle><circle cx="18" cy="19" r="1.5"></circle></svg><span><strong>Envio rastreável</strong><small>Disponibilidade e custo calculados por destino</small></span></div>
+        <div><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 20 6v6c0 5-3.3 8-8 9-4.7-1-8-4-8-9V6z"></path><path d="m8 12 2.5 2.5L16 9"></path></svg><span><strong>Compra protegida</strong><small>Informação clara antes do pagamento</small></span></div>
       </div>
 
-      <div class="conteudo-aba" data-aba="ingredientes">
-        <p style="margin-bottom:10px">Lista de ingredientes (INCI):</p>
-        <p>Aqua, Ascorbic Acid, Propanediol, Glycerin, Sodium Hyaluronate, Tocopherol, Ferulic Acid, Xanthan Gum, Citric Acid, Sodium Hydroxide.</p>
-      </div>
+      <section class="frete-produto" aria-labelledby="titulo-frete">
+        <div class="cabecalho-bloco-produto"><h2 id="titulo-frete">Entrega</h2><span>Calculada com dados reais do fornecedor</span></div>
+        <div class="frete-form"><label for="pais-frete">Destino</label><select id="pais-frete"></select><input id="zip-frete" type="text" placeholder="Código postal (se aplicável)" autocomplete="postal-code"><button id="calcular-frete" class="btn btn-secundario" type="button">Calcular envio</button></div>
+        <div id="resultado-frete" class="resultado-frete"><p>Escolha o país para consultar os métodos disponíveis.</p></div>
+      </section>
 
-      <div class="conteudo-aba" data-aba="avaliacoes">
-        <p style="margin-bottom:14px"><strong>Marta S.</strong> — ★★★★★<br>A minha pele ficou visivelmente mais luminosa em duas semanas.</p>
-        <p style="margin-bottom:14px"><strong>João P.</strong> — ★★★★☆<br>Boa textura, não passa oleosa. Só gostava que durasse mais.</p>
-        <p><strong>Rita A.</strong> — ★★★★★<br>Já é o terceiro frasco que compro, recomendo muito.</p>
+      <div class="abas-produto abas-profissionais">
+        <div class="botoes-aba"><button class="botao-aba ativa" data-aba="descricao">Descrição</button><button class="botao-aba" data-aba="detalhes">Especificações</button><button class="botao-aba" data-aba="envio">Envio</button></div>
+        <div class="conteudo-aba ativa" data-aba="descricao"><div id="produto-descricao-longa" class="conteudo-produto-rich"></div></div>
+        <div class="conteudo-aba" data-aba="detalhes"><dl class="detalhes-produto" id="detalhes-produto"></dl></div>
+        <div class="conteudo-aba" data-aba="envio"><p>Os métodos de envio disponíveis dependem do país, variante, stock e regras logísticas do fornecedor. O valor é consultado no momento da compra.</p></div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<section class="secao-relacionados">
-  <div class="cabecalho-secao" style="max-width:none;margin:0 0 30px;padding:0">
-    <h2>Complete a sua rotina</h2>
-  </div>
-  <div class="grade-produtos">
-    <a href="produto.html" class="cartao-produto">
-      <div class="imagem-produto"><div class="mini-frasco"></div></div>
-      <div class="info-produto">
-        <div class="categoria-produto">Skincare · Limpeza</div>
-        <h3>Gel de limpeza suave</h3>
-        <div class="preco">18,50 €</div>
-      </div>
-    </a>
-    <a href="produto.html" class="cartao-produto">
-      <div class="imagem-produto"><div class="mini-frasco"></div></div>
-      <div class="info-produto">
-        <div class="categoria-produto">Skincare · Anti-idade</div>
-        <h3>Creme de noite com retinol</h3>
-        <div class="preco">36,00 €</div>
-      </div>
-    </a>
-    <a href="produto.html" class="cartao-produto">
-      <div class="imagem-produto"><span class="selo-produto">Vegano</span><div class="mini-frasco"></div></div>
-      <div class="info-produto">
-        <div class="categoria-produto">Skincare · Proteção</div>
-        <h3>Protetor solar toque seco FPS50</h3>
-        <div class="preco">22,00 €</div>
-      </div>
-    </a>
-    <a href="produto.html" class="cartao-produto">
-      <div class="imagem-produto"><div class="mini-frasco"></div></div>
-      <div class="info-produto">
-        <div class="categoria-produto">Skincare · Contorno</div>
-        <h3>Creme de olhos com cafeína</h3>
-        <div class="preco">21,50 €</div>
-      </div>
-    </a>
-  </div>
-</section>
+  <section class="secao-avaliacoes-produto" id="secao-avaliacoes">
+    <div class="cabecalho-secao-produto"><div><span class="eyebrow">Experiências</span><h2>Avaliações</h2></div><p id="nota-avaliacoes"></p></div>
+    <div id="avaliacoes-lista" class="lista-avaliacoes"><p>As avaliações serão carregadas quando disponíveis.</p></div>
+  </section>
 
+  <section class="secao-relacionados"><div class="cabecalho-secao" style="max-width:none;margin:0 0 30px;padding:0"><h2>Também pode gostar</h2></div><div class="grade-produtos" id="produtos-relacionados"></div></section>
+</main>
+
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+ const params=new URLSearchParams(location.search), id=params.get('id');
+ const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+ const paises=[['PT','Portugal'],['ES','Espanha'],['FR','França'],['DE','Alemanha'],['IT','Itália'],['NL','Países Baixos'],['BE','Bélgica'],['AT','Áustria'],['IE','Irlanda'],['SE','Suécia'],['DK','Dinamarca'],['FI','Finlândia'],['PL','Polónia'],['CZ','Chéquia'],['RO','Roménia'],['GB','Reino Unido'],['US','Estados Unidos'],['CA','Canadá'],['MX','México'],['BR','Brasil'],['CL','Chile'],['AR','Argentina'],['CO','Colômbia'],['AU','Austrália'],['NZ','Nova Zelândia'],['AO','Angola']];
+ $('#pais-frete').innerHTML='<option value="">Selecione o país</option>'+paises.map(p=>`<option value="${p[0]}">${p[1]}</option>`).join('');
+ let produto=null,variante=null,quantidade=1;
+ const stars=n=>{const v=Math.max(0,Math.min(5,Number(n)||0));return `<span class="stars" aria-label="${v} de 5">${[1,2,3,4,5].map(i=>`<svg viewBox="0 0 24 24" width="15" height="15" fill="${i<=Math.round(v)?'currentColor':'none'}" stroke="currentColor" stroke-width="1.5"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z"/></svg>`).join('')}</span>`};
+ function atualizar(){if(!produto)return;const preco=Number(produto.precoVendaEUR||0)+Number(variante?.preco_extra_eur||0);$('#produto-preco').textContent=(window.LUMINA?window.LUMINA.money(preco):preco.toLocaleString('pt-PT',{style:'currency',currency:'EUR'}));const stock=Number(variante?.stock??produto.stock??0);$('#stock-produto').innerHTML=stock>0?`<span class="stock-ok">Disponível</span><span>${stock} unidade${stock===1?'':'s'} registada${stock===1?'':'s'}</span>`:'<span class="stock-off">Indisponível</span>';$('#botao-add-produto').disabled=stock<=0;$('#botao-add-produto').textContent=stock>0?'Adicionar ao carrinho':'Indisponível';}
+ function renderVars(vars){if(!Array.isArray(vars)||!vars.length){$('#bloco-variantes').hidden=true;return;}$('#bloco-variantes').hidden=false;const grupos={};vars.forEach(v=>(grupos[v.nome_opcao||'Opção']??=[]).push(v));const [nome,list]=Object.entries(grupos)[0];$('#nome-opcao-variante').textContent=nome;$('#opcoes-variacao').innerHTML=list.map((v,i)=>`<button type="button" class="opcao-variacao${i===0?' selecionada':''}" data-var="${v.id}">${esc(v.valor_opcao||v.nome||'Opção')}</button>`).join('');variante=list[0];$('#opcoes-variacao').querySelectorAll('button').forEach(b=>b.onclick=()=>{variante=list.find(v=>String(v.id)===b.dataset.var);$('#opcoes-variacao').querySelectorAll('button').forEach(x=>x.classList.remove('selecionada'));b.classList.add('selecionada');atualizar();});}
+ function renderGallery(){const imgs=produto.imagens||[];$('#galeria-principal').innerHTML=imgs[0]?`<img class="imagem-produto-real" src="${esc(imgs[0].url)}" alt="${esc(produto.nome)}">`:'<div class="produto-imagem-placeholder"></div>';$('#miniaturas').innerHTML=imgs.map((x,i)=>`<button class="miniatura-real${i===0?' ativa':''}" type="button"><img src="${esc(x.url)}" alt=""></button>`).join('');$('#miniaturas').querySelectorAll('button').forEach((b,i)=>b.onclick=()=>{$('#galeria-principal').innerHTML=`<img class="imagem-produto-real" src="${esc(imgs[i].url)}" alt="${esc(produto.nome)}">`;$('#miniaturas').querySelectorAll('button').forEach(x=>x.classList.remove('ativa'));b.classList.add('ativa');});}
+ async function carregarAvaliacoes(){try{const d=await apiFetch('/produtos/'+id+'/avaliacoes');const lista=[...(d.proprias?.lista||[])];const fornecedor=d.fornecedor?.lista||[];let html='';if(lista.length){html+=lista.map(a=>`<article class="avaliacao-item"><div class="avaliacao-topo"><strong>${esc(a.nome_autor)}</strong><time>${new Date(a.criado_em).toLocaleDateString('pt-PT')}</time></div><div>${stars(a.estrelas)}</div><p>${esc(a.comentario||'')}</p><small>Avaliação de cliente Lúmina</small></article>`).join('');}if(fornecedor.length){html+=fornecedor.map(a=>{const rating=a.score??a.stars??a.star??a.rating??5;const text=a.comment??a.content??a.review??'';const name=a.userName??a.nickName??'Cliente do fornecedor';return `<article class="avaliacao-item"><div class="avaliacao-topo"><strong>${esc(name)}</strong><span>Fonte: CJ Dropshipping</span></div><div>${stars(rating)}</div><p>${esc(text)}</p><small>Avaliação disponibilizada pela plataforma do fornecedor</small></article>`}).join('');}$('#avaliacoes-lista').innerHTML=html||'<p>Ainda não existem avaliações públicas para este produto.</p>';if((d.proprias?.total||0)>0)$('#nota-avaliacoes').textContent=`${d.proprias.total} avaliação${d.proprias.total===1?'':'ões'} de clientes Lúmina`;else if((d.fornecedor?.total||0)>0)$('#nota-avaliacoes').textContent=`${d.fornecedor.total} avaliações disponíveis na CJ`; }catch(e){$('#avaliacoes-lista').innerHTML='<p>As avaliações não estão disponíveis neste momento.</p>';}}
+ async function calcularFrete(){const pais=$('#pais-frete').value;if(!pais){$('#resultado-frete').innerHTML='<p>Selecione um país.</p>';return;}$('#resultado-frete').innerHTML='<p>A consultar métodos disponíveis...</p>';try{const q=new URLSearchParams({pais,quantidade:String(quantidade),varianteId:String(variante?.id||0)});if($('#zip-frete').value.trim())q.set('zip',$('#zip-frete').value.trim());const d=await apiFetch('/produtos/'+id+'/fretes?'+q);if(!d.metodos?.length){$('#resultado-frete').innerHTML='<p>Não há método de envio disponível para este destino e variante neste momento.</p>';return;}$('#resultado-frete').innerHTML=d.metodos.map((m,i)=>`<label class="opcao-frete"><input type="radio" name="frete-produto" value="${esc(m.nome)}" ${i===0?'checked':''}><span><strong>${esc(m.nome)}</strong><small>${m.prazo?`Prazo estimado: ${esc(m.prazo)}`:'Prazo não informado pelo fornecedor'}</small></span><b>$${Number(m.custoUSD).toFixed(2)}</b></label>`).join('');}catch(e){$('#resultado-frete').innerHTML=`<p>${esc(e.message||'Não foi possível calcular o envio.')}</p>`;}}
+ async function carregar(){if(!id){$('#produto-nome').textContent='Produto indisponível';return;}try{produto=await apiFetch('/produtos/'+encodeURIComponent(id));document.title=produto.nome+' — Lúmina';$('#migalha-produto').textContent=produto.nome;$('#produto-nome').textContent=produto.nome;$('#produto-categoria').textContent=produto.categoria||'Produto';$('#produto-descricao').textContent=produto.descricao||'Informação do produto não disponível.';$('#produto-descricao-longa').innerHTML=esc(produto.descricao||'').replace(/\n/g,'<br>');renderGallery();renderVars(produto.variantes);atualizar();$('#detalhes-produto').innerHTML=`<div><dt>Fornecedor</dt><dd>${esc(produto.fornecedor||'')}</dd></div><div><dt>Referência</dt><dd>${esc(produto.idFornecedor||'')}</dd></div><div><dt>SKU</dt><dd>${esc(variante?.sku_variante||produto.skuFornecedor||'—')}</dd></div><div><dt>Peso</dt><dd>${produto.peso_gramas?esc(produto.peso_gramas)+' g':'Não informado'}</dd></div>`;await carregarAvaliacoes();}catch(e){$('#produto-nome').textContent='Produto indisponível';$('#produto-descricao').textContent=e.message||'Este produto não está disponível neste momento.';}}
+ $('#botao-add-produto').onclick=()=>{if(!produto||!variante&&produto.variantes?.length)return;const preco=Number(produto.precoVendaEUR||0)+Number(variante?.preco_extra_eur||0);adicionarAoCarrinho(produto.id,produto.nome,preco,quantidade,{imagem:produto.imagem_principal||produto.imagens?.[0]?.url||null,varianteId:variante?.id||null,idFornecedorVariante:variante?.id_fornecedor_variante||null,skuVariante:variante?.sku_variante||null});$('#mensagem-produto').textContent='Produto adicionado ao carrinho.';};
+ $('.diminuir').onclick=()=>{quantidade=Math.max(1,quantidade-1);$('#quantidade-produto').textContent=quantidade;};$('.aumentar').onclick=()=>{quantidade=Math.min(99,quantidade+1);$('#quantidade-produto').textContent=quantidade;};$('#calcular-frete').onclick=calcularFrete;
+ document.querySelectorAll('.botao-aba').forEach(b=>b.onclick=()=>{document.querySelectorAll('.botao-aba').forEach(x=>x.classList.remove('ativa'));document.querySelectorAll('.conteudo-aba').forEach(x=>x.classList.remove('ativa'));b.classList.add('ativa');document.querySelector(`.conteudo-aba[data-aba="${b.dataset.aba}"]`).classList.add('ativa');});
+ async function carregarRelacionados(){try{const lista=await apiFetch('/produtos');const rel=lista.filter(p=>String(p.id)!==String(id)).slice(0,4);document.getElementById('produtos-relacionados').innerHTML=rel.map(p=>`<a href="produto.html?id=${p.id}" class="cartao-produto"><div class="imagem-produto">${p.imagem_principal?`<img src="${esc(p.imagem_principal)}" alt="" loading="lazy">`:''}</div><div class="info-produto"><div class="categoria-produto">${esc(p.categoria||'')}</div><h3>${esc(p.nome)}</h3><div class="preco">${(window.LUMINA?window.LUMINA.money(Number(p.precoVendaEUR||0)):Number(p.precoVendaEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'}))}</div></div></a>`).join('');}catch(e){}}
+ carregar();
+ carregarRelacionados();
+});
+</script>
 <footer class="rodape">
   <div class="grade-rodape">
     <div>
@@ -198,7 +154,7 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Visa · Mastercard · PayPal · Klarna</span>
+    <span>Métodos de pagamento disponíveis no checkout</span>
   </div>
 </footer>
 
@@ -206,7 +162,7 @@
 <div class="drawer-carrinho">
   <div class="cabecalho-drawer">
     <h3 style="font-size:18px">O seu carrinho</h3>
-    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
+    <button class="fechar-carrinho" aria-label="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
   </div>
   <div class="itens-drawer"></div>
   <div class="rodape-drawer">
@@ -217,5 +173,6 @@
 
 <script src="js/api.js"></script>
 <script src="js/script.js"></script>
+<script src="/js/i18n.js" defer></script>
 </body>
 </html>

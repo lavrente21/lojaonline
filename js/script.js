@@ -15,11 +15,11 @@ function atualizarContadorCarrinho(){
     el.style.display = total > 0 ? 'flex' : 'none';
   });
 }
-function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1){
+function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados = {}){
   const itens = lerCarrinho();
   const existente = itens.find(i => i.produtoId === produtoId);
-  if(existente){ existente.quantidade += quantidade; }
-  else{ itens.push({ produtoId, nome, preco, quantidade }); }
+  if(existente && (existente.idVariante || null) === (metadados.varianteId || null)){ existente.quantidade += quantidade; }
+  else{ itens.push({ produtoId, nome, preco, quantidade, imagem: metadados.imagem || null, idVariante: metadados.varianteId || null, idFornecedorVariante: metadados.idFornecedorVariante || null, skuVariante: metadados.skuVariante || null }); }
   guardarCarrinho(itens);
   mostrarToast(`${nome} adicionado ao carrinho`);
   renderizarDrawerCarrinho();
@@ -38,12 +38,12 @@ async function carregarProdutosNaGrade(seletorContainer, limite){
     }
     container.innerHTML = lista.map(p => `
       <a href="produto.html?id=${p.id}" class="cartao-produto">
-        <div class="imagem-produto"><div class="mini-frasco"></div></div>
+        <div class="imagem-produto">${p.imagem_principal ? `<img src="${p.imagem_principal}" alt="" loading="lazy">` : ""}</div>
         <div class="info-produto">
           <div class="categoria-produto">${p.categoria || ''}</div>
           <h3>${p.nome}</h3>
-          <div class="preco">${p.precoVendaEUR.toFixed(2)} €</div>
-          <button class="botao-add-rapido" data-id="${p.id}" data-nome="${p.nome}" data-preco="${p.precoVendaEUR}">Adicionar ao carrinho</button>
+          <div class="preco">${window.LUMINA?window.LUMINA.money(p.precoVendaEUR):p.precoVendaEUR.toFixed(2)+" €"}</div>
+          <button class="botao-add-rapido" data-id="${p.id}" data-nome="${p.nome}" data-preco="${p.precoVendaEUR}" data-imagem="${encodeURIComponent(p.imagem_principal || '')}">Adicionar ao carrinho</button>
         </div>
       </a>
     `).join('');
@@ -51,7 +51,7 @@ async function carregarProdutosNaGrade(seletorContainer, limite){
     container.querySelectorAll('.botao-add-rapido').forEach(botao => {
       botao.addEventListener('click', e => {
         e.preventDefault(); e.stopPropagation();
-        adicionarAoCarrinho(botao.dataset.id, botao.dataset.nome, parseFloat(botao.dataset.preco), 1);
+        adicionarAoCarrinho(botao.dataset.id, botao.dataset.nome, parseFloat(botao.dataset.preco), 1, {imagem: decodeURIComponent(botao.dataset.imagem || '')});
       });
     });
   }catch(e){
@@ -72,7 +72,7 @@ function renderizarDrawerCarrinho(){
   if(rodape) rodape.style.display = 'block';
   container.innerHTML = itens.map(item => `
     <div class="item-drawer">
-      <div class="miniatura-item"></div>
+      <div class="miniatura-item">${item.imagem ? `<img src="${item.imagem}" alt="" loading="lazy">` : ''}</div>
       <div style="flex:1">
         <div style="font-size:14px;margin-bottom:4px">${item.nome}</div>
         <div style="font-size:13px;color:#8A7A70">Qtd: ${item.quantidade} · €${(item.preco * item.quantidade).toFixed(2)}</div>
@@ -81,7 +81,7 @@ function renderizarDrawerCarrinho(){
   `).join('');
   const subtotal = itens.reduce((soma, i) => soma + i.preco * i.quantidade, 0);
   const spanSubtotal = document.querySelector('.valor-subtotal');
-  if(spanSubtotal) spanSubtotal.textContent = `€${subtotal.toFixed(2)}`;
+  if(spanSubtotal) spanSubtotal.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`;
 }
 
 // ---------- Toast ----------
@@ -161,6 +161,25 @@ function iniciarNewsletter(){
   });
 }
 
+async function carregarHeroReal(){
+  const hero=document.getElementById('hero-produto');
+  const media=document.getElementById('hero-produto-media');
+  const nome=document.getElementById('hero-produto-nome');
+  if(!hero || !media || !nome) return;
+  try{
+    const produtos=await apiFetch('/produtos');
+    const p=Array.isArray(produtos) && produtos[0];
+    if(!p) return;
+    hero.href=`produto.html?id=${encodeURIComponent(p.id)}`;
+    nome.textContent=p.nome || 'Produto de beleza';
+    if(p.imagem_principal){
+      media.innerHTML=`<img src="${p.imagem_principal}" alt="${p.nome || 'Produto Lúmina'}" loading="eager">`;
+    }
+  }catch(e){
+    // Mantém o hero institucional quando o catálogo ainda não está disponível.
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   atualizarContadorCarrinho();
   iniciarAbasProduto();
@@ -179,10 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = botao.dataset.id;
       const quantidadeEl = document.querySelector('.seletor-quantidade span');
       const quantidade = quantidadeEl ? parseInt(quantidadeEl.textContent) : 1;
-      adicionarAoCarrinho(id, nome, preco, quantidade);
+      adicionarAoCarrinho(id, nome, preco, quantidade, {imagem: botao.dataset.imagem || null});
     });
   });
   carregarProdutosNaGrade('.grade-produtos.loja');
+  carregarHeroReal();
   carregarProdutosNaGrade('.grade-produtos-destaque', 4);
 });
 
@@ -216,8 +236,8 @@ function renderizarPaginaCarrinho(){
     `).join('');
   }
   const subtotal = itens.reduce((s,i)=> s + i.preco*i.quantidade, 0);
-  document.querySelectorAll('.valor-subtotal-pagina').forEach(el => el.textContent = `€${subtotal.toFixed(2)}`);
-  document.querySelectorAll('.valor-total-pagina').forEach(el => el.textContent = `€${(subtotal >= 45 || subtotal===0 ? subtotal : subtotal+4.90).toFixed(2)}`);
+  document.querySelectorAll('.valor-subtotal-pagina').forEach(el => el.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`);
+  document.querySelectorAll('.valor-total-pagina').forEach(el => el.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`);
 }
 function removerDoCarrinho(indice){
   const itens = lerCarrinho();
