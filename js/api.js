@@ -1,6 +1,7 @@
-const API_BASE_URL=(window.LUMINA_API_BASE_URL||'https://lumina-api.onrender.com/api').replace(/\/$/,'');
-function obterTokenAdmin(){return localStorage.getItem('lumina_admin_token')}function guardarTokenAdmin(t){localStorage.setItem('lumina_admin_token',t)}function limparTokenAdmin(){localStorage.removeItem('lumina_admin_token')}
-function exigirLoginAdmin(){if(!obterTokenAdmin())window.location.href='index.html'}
-async function apiFetch(caminho,opcoes={}){const token=obterTokenAdmin();const headers=Object.assign({},opcoes.headers||{});if(!(opcoes.body instanceof FormData))headers['Content-Type']='application/json';if(token)headers.Authorization='Bearer '+token;const r=await fetch(API_BASE_URL+caminho,{...opcoes,headers});let d={};try{d=await r.json()}catch{}const login=caminho.includes('/login');if(!login&&token&&(r.status===401||r.status===403)){limparTokenAdmin();window.location.href='index.html';throw new Error('Sessão expirada.')}if(!r.ok)throw new Error(d.erro||'Erro ao contactar o servidor.');return d}
-
-function guardarPerfilAdmin(a){if(a)localStorage.setItem('lumina_admin_profile',JSON.stringify(a))} function obterPerfilAdmin(){try{return JSON.parse(localStorage.getItem('lumina_admin_profile')||'null')}catch{return null}} document.addEventListener('DOMContentLoaded',()=>{const a=obterPerfilAdmin();document.querySelectorAll('.admin-nome').forEach(e=>{if(a?.nome)e.textContent=a.nome})});
+// URL pública da API Render. Pode ser sobrescrita antes de carregar este ficheiro:
+// window.LUMINA_API_BASE_URL = 'https://SEU-SERVICO.onrender.com/api';
+const API_BASE_URL = (window.LUMINA_API_BASE_URL || 'https://lumina-api.onrender.com/api').replace(/\/$/,'');
+function obterTokenCliente(){return localStorage.getItem('lumina_cliente_token')}
+function guardarTokenCliente(t){localStorage.setItem('lumina_cliente_token',t)}
+function limparTokenCliente(){localStorage.removeItem('lumina_cliente_token')}
+async function apiFetch(caminho,opcoes={}){const token=obterTokenCliente();const headers=Object.assign({},opcoes.headers||{});if(!(opcoes.body instanceof FormData))headers['Content-Type']='application/json';if(token)headers.Authorization='Bearer '+token;const r=await fetch(API_BASE_URL+caminho,{...opcoes,headers});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.erro||'Erro ao contactar o servidor.');return d}
