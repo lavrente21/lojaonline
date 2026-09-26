@@ -42,8 +42,8 @@ async function carregarProdutosNaGrade(seletorContainer, limite){
         <div class="info-produto">
           <div class="categoria-produto">${p.categoria || ''}</div>
           <h3>${p.nome}</h3>
-          <div class="preco">${window.LUMINA?window.LUMINA.money(p.precoVendaEUR):p.precoVendaEUR.toFixed(2)+" €"}</div>
-          <button class="botao-add-rapido" data-id="${p.id}" data-nome="${p.nome}" data-preco="${p.precoVendaEUR}" data-imagem="${encodeURIComponent(p.imagem_principal || '')}">Adicionar ao carrinho</button>
+          <div class="preco-produto-adminfront">${p.promocaoAtiva&&Number(p.promocaoPrecoEUR)>0&&Number(p.promocaoPrecoEUR)<Number(p.precoVendaEUR)?`<del class="preco-anterior" data-lumina-eur="${Number(p.precoVendaEUR)}">${window.LUMINA?window.LUMINA.money(Number(p.precoVendaEUR)):Number(p.precoVendaEUR).toFixed(2)+" €"}</del>`:''}<div class="preco" data-lumina-eur="${Number((p.precoAtualEUR??p.precoVendaEUR)||0)}">${window.LUMINA?window.LUMINA.money((p.precoAtualEUR??p.precoVendaEUR)):(p.precoAtualEUR??p.precoVendaEUR).toFixed(2)+" €"}</div></div>
+          <button class="botao-add-rapido" data-id="${p.id}" data-nome="${p.nome}" data-preco="${(p.precoAtualEUR??p.precoVendaEUR)}" data-imagem="${encodeURIComponent(p.imagem_principal || '')}">Adicionar ao carrinho</button>
         </div>
       </a>
     `).join('');
@@ -262,3 +262,4 @@ document.addEventListener('DOMContentLoaded', () => {
   renderizarPaginaCarrinho();
   iniciarPagamento();
 });
+
