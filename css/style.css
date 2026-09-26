@@ -966,3 +966,45 @@ section{padding-left:var(--gutter);padding-right:var(--gutter);}
 .pagina-produto-profissional{max-width:1240px;margin:0 auto}.layout-produto{align-items:start}.info-produto-completa{min-width:0}.info-produto-completa h1{font-size:clamp(28px,3.2vw,42px);max-width:720px;line-height:1.05;margin:5px 0 10px}.descricao-curta{max-width:620px;font-size:14px;line-height:1.6;color:#6d5f57;margin-bottom:15px}.selos-profissionais{padding:12px 0;gap:10px;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}.selos-profissionais>div{padding:8px 0}.frete-produto{padding:17px 0!important;margin-top:10px}.cabecalho-bloco-produto{margin-bottom:10px}.cabecalho-bloco-produto h2{font-size:18px}.frete-form{gap:8px}.frete-form select,.frete-form input{min-height:42px}.resultado-frete:empty{display:none}.abas-profissionais{margin-top:14px;border-top:1px solid var(--linha)}.botoes-aba{position:sticky;top:74px;z-index:5;background:var(--branco);padding-top:7px}.conteudo-aba{font-size:13px;line-height:1.7;padding:15px 0}.conteudo-produto-rich{max-height:180px;overflow:auto;padding-right:10px}.detalhes-produto{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 20px}.detalhes-produto>div{padding:8px 0;border-bottom:1px solid #eee7df}.detalhes-produto dt{font-size:11px;color:#8a7b72}.detalhes-produto dd{font-size:13px;margin-top:2px}.secao-avaliacoes-produto{padding-top:42px!important;padding-bottom:38px!important}.lista-avaliacoes{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.avaliacao-item{padding:16px!important}.avaliacao-item p{font-size:12px!important;line-height:1.55}.secao-relacionados{padding-top:38px!important}.secao-relacionados .grade-produtos{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.secao-relacionados .info-produto{padding:12px}.secao-relacionados .botao-add-rapido{display:none}.imagem-produto-real{width:100%;height:100%;object-fit:contain}.produto-galeria{background:#f7f1eb}.miniatura-real img{width:100%;height:100%;object-fit:cover}@media(max-width:900px){.lista-avaliacoes,.secao-relacionados .grade-produtos{grid-template-columns:repeat(2,minmax(0,1fr))}.botoes-aba{top:64px}}@media(max-width:640px){.pagina-produto-profissional{width:calc(100% - 24px)}.info-produto-completa h1{font-size:28px}.detalhes-produto{grid-template-columns:1fr}.botoes-aba{position:static;overflow:auto;display:flex}.botao-aba{white-space:nowrap}.conteudo-produto-rich{max-height:150px}.lista-avaliacoes,.secao-relacionados .grade-produtos{grid-template-columns:1fr}.produto-galeria{min-height:calc(100vw - 24px)!important}.selos-profissionais{display:grid!important;grid-template-columns:1fr!important}.linha-compra{display:grid!important;grid-template-columns:80px 1fr!important}.frete-form{grid-template-columns:1fr!important}}
 
 .preco-produto-adminfront{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.preco-anterior{font-size:.86em;color:#8a7a70}.preco-principal-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+/* Lúmina product compact v3 */
+.pagina-produto-profissional{padding-bottom:40px!important}
+.layout-produto{gap:clamp(24px,4vw,44px)!important}
+.produto-galeria{min-height:clamp(360px,38vw,500px)!important;max-height:500px}
+.info-produto-completa h1{font-size:clamp(26px,2.8vw,38px)!important;margin-bottom:7px!important}
+.descricao-curta{margin-bottom:10px!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.selos-profissionais{grid-template-columns:repeat(3,1fr)!important;gap:8px!important;margin:12px 0!important;padding:10px 0!important}
+.selos-profissionais>div{padding:5px 3px!important}
+.selos-profissionais small{font-size:10px!important;line-height:1.35}
+.frete-produto{padding:0!important;border:0!important;background:transparent!important;margin:12px 0!important}
+.frete-produto .cabecalho-bloco-produto{padding:11px 0;border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);cursor:pointer}
+.frete-form{max-height:0;overflow:hidden;opacity:0;transition:max-height .25s ease,opacity .2s ease}
+.frete-produto.aberto .frete-form{max-height:180px;opacity:1;padding-top:10px}
+.resultado-frete{max-height:220px;overflow:auto}
+.abas-profissionais{margin-top:12px!important}
+.conteudo-produto-rich{max-height:130px!important}
+.secao-avaliacoes-produto{margin-top:35px!important;padding-top:25px!important}
+.lista-avaliacoes{max-height:260px;overflow:auto}
+.secao-relacionados{padding-bottom:35px!important}
+@media(max-width:900px){.selos-profissionais{grid-template-columns:1fr!important}.produto-galeria{max-height:none}}
+@media(max-width:640px){.pagina-produto-profissional{padding-bottom:25px!important}.layout-produto{gap:20px!important}.produto-galeria{min-height:calc(100vw - 24px)!important}.selos-profissionais{display:grid!important}.secao-avaliacoes-produto{margin-top:25px!important}.lista-avaliacoes{max-height:220px}}
+
+/* Entrega automática por destino */
+.frete-auto{margin-top:10px!important}
+.frete-auto-cabecalho{display:flex!important;align-items:center;justify-content:space-between;gap:16px;cursor:default!important}
+.frete-auto-cabecalho h2{margin:0!important;font-size:15px!important}
+.frete-auto-cabecalho small{display:block;margin-top:3px;color:#85766c;font-size:11px}
+.frete-status{font-size:11px;color:#5d6c54;font-weight:600;white-space:nowrap}
+.frete-auto-controles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.72fr);gap:8px;padding:10px 0 4px}
+.frete-auto-controles label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.frete-auto-controles select,.frete-auto-controles input{min-width:0;width:100%;min-height:40px;border:1px solid #ded5cd;border-radius:7px;background:#fff;padding:0 11px;font:inherit;font-size:12px;color:#302822}
+.resultado-frete{max-height:260px;overflow:auto}
+.frete-indisponivel{display:grid;gap:4px;padding:12px;border:1px solid #eadfd7;border-radius:8px;background:#faf7f4;font-size:12px}
+.frete-indisponivel strong{color:#7f4437}
+.frete-indisponivel span{color:#776a61;line-height:1.45}
+.opcao-frete{display:flex!important;align-items:center;justify-content:space-between;gap:14px;padding:10px 0!important;border-bottom:1px solid #eee7df!important}
+.opcao-frete:last-child{border-bottom:0!important}
+.opcao-frete span{display:grid;gap:2px;min-width:0}
+.opcao-frete strong{font-size:12px;font-weight:600;overflow-wrap:anywhere}
+.opcao-frete small{font-size:10.5px;color:#85776f}
+.opcao-frete b{font-size:12px;white-space:nowrap}
+@media(max-width:640px){.frete-auto-controles{grid-template-columns:1fr}.frete-auto-cabecalho{align-items:flex-start}.opcao-frete{gap:10px}}

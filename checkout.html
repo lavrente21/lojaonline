@@ -152,7 +152,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     renderizarResumoCheckout();
-    document.getElementById('ck-pais').addEventListener('change', ()=>{alternarPagamentoConformePais();calcularPortesCheckout();});
+    document.getElementById('ck-pais').addEventListener('change', ()=>{localStorage.setItem('lumina_country', document.getElementById('ck-pais').value);alternarPagamentoConformePais();calcularPortesCheckout();});
     document.getElementById('ck-codigo-postal').addEventListener('blur', calcularPortesCheckout);
     calcularPortesCheckout();
     document.getElementById('ck-opcoes-pagamento').addEventListener('change', atualizarObrigatoriedadeTelefone);
