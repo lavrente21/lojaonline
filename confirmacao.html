@@ -66,8 +66,8 @@
     }
 
     document.getElementById('conf-prazo').textContent = rota === 'agente_de_carga'
-      ? 'Prazo estimado de entrega: 15 a 25 dias úteis (o pedido passa por um agente de carga antes de chegar a Angola).'
-      : 'Prazo estimado de entrega: 5 a 9 dias úteis.';
+      ? 'O pedido será encaminhado para o agente de carga configurado e o rastreio será atualizado quando estiver disponível.'
+      : 'O prazo de entrega será atualizado com base na confirmação logística do fornecedor.';
   } else {
     document.getElementById('conf-icone').textContent = '🛒';
     document.getElementById('conf-titulo').textContent = 'Nenhum pedido encontrado';
@@ -110,7 +110,7 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Visa · Mastercard · PayPal · Klarna</span>
+    <span>Métodos de pagamento disponíveis no checkout</span>
   </div>
 </footer>
 

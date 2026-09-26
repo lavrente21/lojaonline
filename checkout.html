@@ -161,10 +161,10 @@
       }
 
       const corpo = {
+        nome, email, telefoneCliente: telefone || undefined,
         itens: itens.map(i => ({ produtoId: i.produtoId, quantidade: i.quantidade })),
         moradaEntrega: { linha1: morada, cidade, codigoPostal, pais },
-        moeda: metodo === 'aoa' ? 'AOA' : 'EUR',
-        telefoneCliente: telefone || undefined
+        moeda: metodo === 'aoa' ? 'AOA' : 'EUR'
       };
 
       const botao = document.getElementById('ck-botao-confirmar');
@@ -172,6 +172,7 @@
       try{
         const resultado = await apiFetch('/checkout', { method: 'POST', body: JSON.stringify(corpo) });
         localStorage.removeItem('lumina_carrinho');
+        if (resultado.pagamento?.urlCheckout) { window.location.href = resultado.pagamento.urlCheckout; return; }
         const params = new URLSearchParams({
           numero: resultado.numeroPedido,
           totalEUR: resultado.totalEUR,
@@ -225,7 +226,7 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Visa · Mastercard · PayPal · Klarna</span>
+    <span>Métodos de pagamento disponíveis no checkout</span>
   </div>
 </footer>
 
