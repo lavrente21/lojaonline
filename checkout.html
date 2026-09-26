@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
+<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
 
 <header class="principal">
   <div class="header-linha">
@@ -23,12 +23,12 @@
     </nav>
     <div class="acoes-header">
       <form class="busca-form" action="busca-resultados.html">
-        <span class="icone-svg" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.2 4.2"></path></svg></span>
+        <i>🔍</i>
         <input type="text" name="q" placeholder="Procurar produtos...">
       </form>
-      <a href="conta/login.html" class="acao-icone" aria-label="Conta"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.7-3.5 2.9-5.4 6.5-5.4s5.8 1.9 6.5 5.4"></path></svg></a>
+      <a href="conta/login.html" aria-label="Conta">👤</a>
       <button class="botao-carrinho" aria-label="Carrinho">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg><span class="contador-carrinho">0</span>
+        🛍️<span class="contador-carrinho">0</span>
       </button>
     </div>
   </div>
@@ -60,7 +60,7 @@
             <option value="FR">França</option>
             <option value="DE">Alemanha</option>
             <option value="US">Estados Unidos</option>
-            <option value="GB">Reino Unido</option><option value="IE">Irlanda</option><option value="IT">Itália</option><option value="NL">Países Baixos</option><option value="BE">Bélgica</option><option value="AT">Áustria</option><option value="SE">Suécia</option><option value="DK">Dinamarca</option><option value="PL">Polónia</option><option value="CA">Canadá</option><option value="MX">México</option><option value="BR">Brasil</option><option value="CL">Chile</option><option value="AO">Angola</option>
+            <option value="AO">Angola</option>
           </select>
         </div>
         <div class="linha-formulario">
@@ -73,7 +73,7 @@
     <div class="cartao-conta">
       <h2>Forma de pagamento</h2>
       <div class="opcoes-pagamento" id="ck-opcoes-pagamento">
-        <label class="opcao-pagamento"><input type="radio" name="pagamento" value="eur" checked> Cartão de crédito/débito via Stripe</label>
+        <label class="opcao-pagamento"><input type="radio" name="pagamento" value="eur" checked> Cartão de crédito/débito, PayPal (EUR)</label>
         <label class="opcao-pagamento" id="ck-opcao-aoa" style="display:none">
           <input type="radio" name="pagamento" value="aoa"> Multicaixa Express — pagar em Kwanza (AOA)
         </label>
@@ -87,7 +87,7 @@
   <div class="resumo-checkout">
     <h2 style="font-size:18px;margin-bottom:16px">Resumo do pedido</h2>
     <div id="ck-lista-itens"></div>
-    <div id="ck-frete-opcoes" class="checkout-frete-opcoes"></div><div class="linha-resumo"><span>Portes</span><span id="ck-portes">A calcular</span></div>
+    <div class="linha-resumo"><span>Portes</span><span id="ck-portes">4,90 €</span></div>
     <div class="linha-resumo total"><span>Total</span><span id="ck-total">—</span></div>
     <div class="linha-resumo" id="ck-total-aoa" style="display:none;color:#8A7A70;font-size:13px"><span>Equivalente</span><span></span></div>
     <button id="ck-botao-confirmar" class="btn btn-primario" style="width:100%;text-align:center;display:block;margin-top:18px">Confirmar pedido</button>
@@ -95,12 +95,7 @@
 </div>
 
 <script>
-  let PORTES_EUR = 0;
-  let METODO_ENVIO = null;
-  let FRETE_USD = null;
-  function moedaAtual(){return (window.LUMINA&&window.LUMINA.currency)?window.LUMINA.currency():'EUR';}
-  function formatar(valor, moeda=moedaAtual()){return window.LUMINA?window.LUMINA.money(valor, moeda):`${Number(valor).toFixed(2)} ${moeda}`;}
-  let TOTAL_BASE_EUR=0;
+  const PORTES_EUR = 4.90;
 
   function renderizarResumoCheckout(){
     const itens = lerCarrinho();
@@ -111,21 +106,9 @@
       container.innerHTML = itens.map(i => `<div class="linha-resumo"><span>${i.nome} ×${i.quantidade}</span><span>${(i.preco*i.quantidade).toFixed(2)} €</span></div>`).join('');
     }
     const subtotal = itens.reduce((s,i)=>s+i.preco*i.quantidade,0);
-    const total = itens.length ? subtotal + PORTES_EUR : 0; TOTAL_BASE_EUR=total;
-    document.getElementById('ck-portes').textContent = itens.length ? (PORTES_EUR ? formatar(PORTES_EUR) : 'A calcular') : '—';
-    document.getElementById('ck-total').textContent = formatar(total);
+    const total = itens.length ? subtotal + PORTES_EUR : 0;
+    document.getElementById('ck-total').textContent = total.toFixed(2) + ' €';
     return total;
-  }
-
-  async function calcularPortesCheckout(){
-    const itens=lerCarrinho(); const pais=document.getElementById('ck-pais').value;
-    if(!itens.length)return; document.getElementById('ck-portes').textContent='A calcular...';
-    try{const d=await apiFetch('/checkout/quote',{method:'POST',body:JSON.stringify({itens,pais,zip:document.getElementById('ck-codigo-postal').value.trim(),moeda:moedaAtual()})});
-      const metodos=d.metodos||[]; if(!metodos.length){PORTES_EUR=0;METODO_ENVIO=null;FRETE_USD=null;document.getElementById('ck-frete-opcoes').innerHTML='<p class="nota-frete">Não há método de envio disponível para este destino neste momento.</p>';document.getElementById('ck-portes').textContent='Não disponível';renderizarResumoCheckout();return;}
-      const opcoes=document.getElementById('ck-frete-opcoes');opcoes.innerHTML='<h3>Método de entrega</h3>'+metodos.map((m,i)=>`<label class="checkout-frete-opcao"><input type="radio" name="ck-metodo-envio" value="${String(m.nome).replace(/"/g,'&quot;')}" data-usd="${Number(m.custoUSD||0)}" data-eur="${Number(m.custoEUR||0)}"  ${i===0?'checked':''}><span><strong>${String(m.nome).replace(/[<>]/g,'')}</strong><small>${m.prazo?`Prazo estimado: ${String(m.prazo).replace(/[<>]/g,'')}`:'Prazo não informado'}</small></span><b>${window.LUMINA?new Intl.NumberFormat(document.documentElement.lang==='fr'?'fr-FR':document.documentElement.lang==='es'?'es-ES':document.documentElement.lang==='en'?'en-US':'pt-PT',{style:'currency',currency:d.moeda||moedaAtual(),maximumFractionDigits:(d.moeda==='CLP'||d.moeda==='COP'||d.moeda==='AOA')?0:2}).format(Number(m.custoMoeda||0)):Number(m.custoMoeda||0).toFixed(2)+' '+(d.moeda||moedaAtual())}</b></label>`).join('');
-      function selecionar(){const r=document.querySelector('input[name="ck-metodo-envio"]:checked');if(!r)return;PORTES_EUR=Number(r.dataset.eur);FRETE_USD=Number(r.dataset.usd);METODO_ENVIO=r.value;document.getElementById('ck-portes').textContent=formatar(PORTES_EUR);renderizarResumoCheckout();}
-      opcoes.querySelectorAll('input[name="ck-metodo-envio"]').forEach(r=>r.addEventListener('change',selecionar)); selecionar();
-    }catch(e){PORTES_EUR=0;METODO_ENVIO=null;FRETE_USD=null;document.getElementById('ck-frete-opcoes').innerHTML=`<p class="nota-frete">${e.message}</p>`;document.getElementById('ck-portes').textContent='Não disponível';renderizarResumoCheckout();}
   }
 
   function alternarPagamentoConformePais(){
@@ -152,9 +135,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     renderizarResumoCheckout();
-    document.getElementById('ck-pais').addEventListener('change', ()=>{alternarPagamentoConformePais();calcularPortesCheckout();});
-    document.getElementById('ck-codigo-postal').addEventListener('blur', calcularPortesCheckout);
-    calcularPortesCheckout();
+    document.getElementById('ck-pais').addEventListener('change', alternarPagamentoConformePais);
     document.getElementById('ck-opcoes-pagamento').addEventListener('change', atualizarObrigatoriedadeTelefone);
 
     document.getElementById('ck-botao-confirmar').addEventListener('click', async () => {
@@ -175,32 +156,41 @@
       if(!nome || !email || !cidade || !morada){
         erroEl.textContent = 'Preencha nome, e-mail, cidade e morada.'; erroEl.style.display='block'; return;
       }
-      if(!METODO_ENVIO){ erroEl.textContent='Escolha um destino com método de envio disponível antes de continuar.'; erroEl.style.display='block'; return; }
       if(metodo === 'aoa' && !telefone){
         erroEl.textContent = 'O telefone é obrigatório para pagar com Multicaixa Express.'; erroEl.style.display='block'; return;
       }
 
       const corpo = {
-        nome, email, telefoneCliente: telefone || undefined,
-        itens: itens.map(i => ({ produtoId: i.produtoId, quantidade: i.quantidade, idVariante: i.idVariante || null, idFornecedorVariante: i.idFornecedorVariante || null })),
-        freteUSD: FRETE_USD, freteEUR: PORTES_EUR, metodoEnvio: METODO_ENVIO,
+        itens: itens.map(i => ({ produtoId: i.produtoId, quantidade: i.quantidade })),
         moradaEntrega: { linha1: morada, cidade, codigoPostal, pais },
-        moeda: metodo === 'aoa' ? 'AOA' : moedaAtual()
+        moeda: metodo === 'aoa' ? 'AOA' : 'EUR',
+        telefoneCliente: telefone || undefined
       };
 
       const botao = document.getElementById('ck-botao-confirmar');
       botao.textContent = 'A processar...'; botao.disabled = true;
       try{
         const resultado = await apiFetch('/checkout', { method: 'POST', body: JSON.stringify(corpo) });
+
+        // Pagamento com cartão (Stripe): o pedido já foi gravado, mas o
+        // cliente ainda TEM de pagar de facto — manda-o para a página
+        // hospedada do Stripe. Só depois de lá pagar é que o Stripe o traz
+        // de volta para confirmacao.html (ver success_url em pagamentos-eur.js).
+        if (resultado.pagamento.metodo === 'stripe' && resultado.pagamento.urlCheckout) {
+          window.location.href = resultado.pagamento.urlCheckout;
+          return;
+        }
+
+        // Multicaixa Express (AppyPay): o pedido já foi criado e a cobrança
+        // já foi enviada para o telemóvel do cliente — mostramos já a
+        // confirmação com a referência, o pagamento acontece à parte.
         localStorage.removeItem('lumina_carrinho');
-        if (resultado.pagamento?.urlCheckout) { window.location.href = resultado.pagamento.urlCheckout; return; }
         const params = new URLSearchParams({
           numero: resultado.numeroPedido,
           totalEUR: resultado.totalEUR,
-          totalMoeda: resultado.totalMoeda || '',
-          moeda: resultado.moeda || corpo.moeda,
+          totalAOA: resultado.totalAOA || '',
           rota: resultado.rotaEnvio,
-          moeda: resultado.moeda || corpo.moeda,
+          moeda: corpo.moeda,
           idCobranca: resultado.pagamento.idCobranca || ''
         });
         window.location.href = 'confirmacao.html?' + params.toString();
@@ -248,7 +238,7 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Visa · Mastercard · PayPal · Klarna</span>
   </div>
 </footer>
 
@@ -256,7 +246,7 @@
 <div class="drawer-carrinho">
   <div class="cabecalho-drawer">
     <h3 style="font-size:18px">O seu carrinho</h3>
-    <button class="fechar-carrinho" aria-label="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
+    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
   </div>
   <div class="itens-drawer"></div>
   <div class="rodape-drawer">
@@ -267,6 +257,5 @@
 
 <script src="js/api.js"></script>
 <script src="js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
 </body>
 </html>

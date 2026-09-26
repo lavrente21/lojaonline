@@ -10,7 +10,7 @@
    node seed.js
    node server.js
    ```
-   Isto deixa a API a correr em `http://URL do backend Render`.
+   Isto deixa a API a correr em `http://localhost:3000`.
 
 2. Abrir `index.html` desta pasta diretamente no navegador (duplo clique, ou
    com um servidor local simples tipo `npx serve .`).
