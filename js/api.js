@@ -1,6 +1,6 @@
 // URL pública da API Render. Pode ser sobrescrita antes de carregar este ficheiro:
 // window.LUMINA_API_BASE_URL = 'https://SEU-SERVICO.onrender.com/api';
-const API_BASE_URL = (window.LUMINA_API_BASE_URL || 'https://lumina-api.onrender.com/api').replace(/\/$/,'');
+const API_BASE_URL = (window.LUMINA_API_BASE_URL || 'https://lojaonline-backend.onrender.com/api').replace(/\/$/,'');
 function obterTokenCliente(){return localStorage.getItem('lumina_cliente_token')}
 function guardarTokenCliente(t){localStorage.setItem('lumina_cliente_token',t)}
 function limparTokenCliente(){localStorage.removeItem('lumina_cliente_token')}
