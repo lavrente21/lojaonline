@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novo produto — Admin Lúmina</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+<script src="js/api.js"></script><script src="js/i18n-admin.js"></script>
+<script>function normalizarEtiquetaAdmin(v){return String(v||'').split(/[,\s]+/).map(x=>x.trim()).filter(Boolean).map(x=>x.startsWith('#')?x:'#'+x.replace(/^#+/,'' )).join(' ')}
+async function carregarCategoriasAdmin(sel){try{const cs=await apiFetch('/operacoes/admin/categorias');sel.innerHTML=cs.map(c=>`<option value=\"${String(c.nome).replace(/\"/g,'&quot;')}\">${String(c.nome).replace(/[&<>]/g,'')}</option>`).join('')}catch(e){console.warn(e.message)}}
+exigirLoginAdmin();</script>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+  <span class="admin-logo">Lúmina · Admin</span>
+  <div class="admin-nav-grupo"><h5>Visão geral</h5><a href="dashboard.html" class="">Dashboard</a></div><div class="admin-nav-grupo"><h5>Catálogo</h5><a href="produtos.html" class="ativo">Produtos</a>
+<a href="categorias.html" class="">Categorias</a>
+<a href="stock.html" class="">Stock</a></div><div class="admin-nav-grupo"><h5>Vendas</h5><a href="pedidos.html" class="">Pedidos</a>
+<a href="devolucoes.html" class="">Devoluções</a>
+<a href="assinaturas.html" class="">Assinaturas</a></div><div class="admin-nav-grupo"><h5>Clientes</h5><a href="clientes.html" class="">Clientes</a>
+<a href="cupons.html" class="">Cupões</a>
+<a href="avaliacoes.html" class="">Avaliações</a>
+<a href="atendimento.html" class="">Atendimento</a></div><div class="admin-nav-grupo"><h5>Conteúdo</h5><a href="conteudo.html" class="">Blog e guias</a>
+<a href="newsletter.html" class="">Newsletter</a></div><div class="admin-nav-grupo"><h5>Loja</h5><a href="pagamentos.html" class="">Pagamentos</a>
+<a href="envios.html" class="">Envios</a>
+<a href="relatorios.html" class="">Relatórios</a>
+<a href="configuracoes.html" class="">Configurações</a></div>
+</aside>
+  <main class="admin-main">
+    <div class="admin-topo">
+      <h1>Novo produto</h1>
+      <div class="admin-usuario"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.7-3.5 2.9-5.4 6.5-5.4s5.8 1.9 6.5 5.4"></path></svg> Gestor &nbsp;·&nbsp; <a href="index.html" onclick="limparTokenAdmin()">Sair</a></div>
+    </div>
+    
+<div class="painel-admin">
+  <h2>Importar da CJ Dropshipping</h2>
+  <p style="font-size:13.5px;color:#6b6b6b;margin-top:-6px;margin-bottom:12px">Cola o ID do produto ou o link da página do produto na CJ. Os campos abaixo são pré-preenchidos — revê o preço de venda antes de criar.</p>
+  <div class="grade-form-admin">
+    <div class="campo-formulario" style="grid-column:1/-1"><label>ID ou link do produto na CJ</label><input type="text" id="pn-cj-id" placeholder="ex: 04A22450-67F0-4617-A132-E7AE7F8963B0 ou https://cjdropshipping.com/product/...-p-....html"></div>
+  </div>
+  <button class="btn" id="pn-cj-buscar" type="button">Buscar produto na CJ</button>
+  <span id="pn-cj-estado" style="margin-left:10px;font-size:13.5px"></span><span id="pn-cj-preco-usd" style="margin-left:10px;font-size:13px;color:#6b6b6b"></span>
+  <div id="pn-cj-preview" style="display:none;margin-top:14px;gap:12px;align-items:flex-start" >
+    <img id="pn-cj-imagem" src="" alt="" style="width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #e5e0d8">
+  </div>
+</div>
+<div class="painel-admin">
+  <h2>Informação geral</h2>
+  <div class="grade-form-admin">
+    <div class="campo-formulario"><label>Nome do produto</label><input type="text" id="pn-nome"></div>
+    <div class="campo-formulario"><label>Categoria</label><select id="pn-categoria"></select></div><div class="campo-formulario"><label>Estado do catálogo</label><select id="pn-estado"><option value="normal">Normal</option><option value="destaque">Destaque</option><option value="inativo">Rascunho / inativo</option></select></div><div class="campo-formulario"><label>Tags</label><input id="pn-etiqueta" maxlength="60" placeholder="#novo #bestseller #skincare"></div>
+    <div class="campo-formulario" style="grid-column:1/-1"><label>Descrição (uso interno, ainda não exibida na loja)</label><textarea rows="3" id="pn-descricao"></textarea></div>
+  </div>
+</div>
+<div class="painel-admin">
+  <h2>Fornecedor e preço</h2>
+  <div class="grade-form-admin">
+    <div class="campo-formulario"><label>Fornecedor</label>
+      <select id="pn-fornecedor"><option value="cj">CJ Dropshipping</option><option value="buckydrop">Buckydrop</option></select>
+    </div>
+    <div class="campo-formulario"><label>ID / link no fornecedor</label><input type="text" id="pn-id-fornecedor" placeholder="ID/SKU real do fornecedor"></div>
+    <div class="campo-formulario"><label>Preço de custo (€)</label><input type="number" step="0.01" id="pn-custo" value="0"></div>
+    <div class="campo-formulario"><label>Preço de venda (€)</label><input type="number" step="0.01" id="pn-venda" value="0"></div><div class="campo-formulario"><label>Margem alvo (%)</label><input type="number" step="0.1" min="0" max="99.9" id="pn-margem" value="60"></div>
+    <div class="campo-formulario"><label>Stock inicial</label><input type="number" id="pn-stock" value="0"></div><div class="campo-formulario"><label>Lucro por unidade</label><output id="pn-lucro">€0,00</output></div>
+  </div>
+</div>
+<p id="pn-erro" style="display:none;color:#B14B33;font-size:13.5px;margin-bottom:12px"></p>
+<button class="btn btn-primario" id="pn-botao">Criar produto</button>
+<script>
+  // Guarda os dados completos da última busca na CJ (imagens, descrição, sku),
+  // para irem juntos quando o produto for de facto criado.
+  let ultimoProdutoCJ = null;
+
+  carregarCategoriasAdmin(document.getElementById('pn-categoria'));
+document.getElementById('pn-cj-buscar').addEventListener('click', async () => {
+    const estadoEl = document.getElementById('pn-cj-estado');
+    const idOuLink = document.getElementById('pn-cj-id').value.trim();
+    if(!idOuLink){ estadoEl.style.color = '#B14B33'; estadoEl.textContent = 'Indica o ID ou o link do produto.'; return; }
+    estadoEl.style.color = '#6b6b6b';
+    estadoEl.textContent = 'A procurar na CJ...';
+    try{
+      const p = await apiFetch('/produtos/importar/cj?id=' + encodeURIComponent(idOuLink));
+      ultimoProdutoCJ = p;
+
+      document.getElementById('pn-nome').value = p.nome || '';
+      document.getElementById('pn-descricao').value = p.descricao || '';
+      document.getElementById('pn-fornecedor').value = 'cj';
+      document.getElementById('pn-id-fornecedor').value = p.idFornecedor || '';
+      document.getElementById('pn-custo').value = p.precoCustoEUR || 0;
+      document.getElementById('pn-venda').value = p.precoVendaSugeridoEUR || 0;document.getElementById('pn-margem').value = 60;
+      document.getElementById('pn-stock').value = Number.isFinite(Number(p.stock)) ? Number(p.stock) : 0;
+      document.getElementById('pn-cj-preco-usd').textContent = p.precoCustoUSD != null ? `Custo CJ: $${Number(p.precoCustoUSD).toFixed(2)} USD (conversão para EUR não é automática)` : ''; 
+
+      // Se a categoria da CJ corresponder a uma opção existente, seleciona-a;
+      // caso contrário deixa como está para o admin escolher manualmente.
+      const selectCategoria = document.getElementById('pn-categoria');
+      const categoriaCJ = String(p.categoriaCJ || '').split('/').pop().trim();
+      const opcaoExistente = Array.from(selectCategoria.options).find(o => o.value.toLowerCase() === categoriaCJ.toLowerCase());
+      if (opcaoExistente) selectCategoria.value = opcaoExistente.value;
+
+      if (p.imagemPrincipal) {
+        document.getElementById('pn-cj-imagem').src = p.imagemPrincipal;
+        document.getElementById('pn-cj-preview').style.display = 'flex';
+      } else {
+        document.getElementById('pn-cj-preview').style.display = 'none';
+      }
+
+      estadoEl.style.color = '#3E7A4C';
+      estadoEl.textContent = 'Produto encontrado — revê os campos abaixo antes de criar.';
+    }catch(e){
+      ultimoProdutoCJ = null;
+      estadoEl.style.color = '#B14B33';
+      estadoEl.textContent = e.message;
+    }
+  });
+
+  function atualizarNovo(){const c=Number(document.getElementById('pn-custo').value||0),v=Number(document.getElementById('pn-venda').value||0),m=Number(document.getElementById('pn-margem').value||0);document.getElementById('pn-lucro').textContent=(v-c).toLocaleString('pt-PT',{style:'currency',currency:'EUR'});if(document.activeElement.id==='pn-margem'&&c>0&&m<100)document.getElementById('pn-venda').value=(c/(1-m/100)).toFixed(2);}
+document.getElementById('pn-custo').oninput=atualizarNovo;document.getElementById('pn-venda').oninput=atualizarNovo;document.getElementById('pn-margem').oninput=atualizarNovo;
+document.getElementById('pn-botao').addEventListener('click', async () => {
+    const erroEl = document.getElementById('pn-erro');
+    const idFornecedorAtual = document.getElementById('pn-id-fornecedor').value.trim();
+    const corpo = {
+      nome: document.getElementById('pn-nome').value.trim(),
+      categoria: document.getElementById('pn-categoria').value,
+      fornecedor: document.getElementById('pn-fornecedor').value,
+      idFornecedor: idFornecedorAtual,
+      precoCustoEUR: parseFloat(document.getElementById('pn-custo').value) || 0,
+      precoVendaEUR: parseFloat(document.getElementById('pn-venda').value) || 0,margemAlvoPct: parseFloat(document.getElementById('pn-margem').value) || 0,
+      stock: parseInt(document.getElementById('pn-stock').value) || 0,
+      descricao: document.getElementById('pn-descricao').value.trim(),
+      etiqueta: normalizarEtiquetaAdmin(document.getElementById('pn-etiqueta').value),
+      ativo: document.getElementById('pn-estado').value !== 'inativo',
+      destaque: document.getElementById('pn-estado').value === 'destaque'
+    };
+    // Só inclui os dados extra da CJ (imagens/sku) se ainda corresponderem
+    // ao produto que está atualmente no formulário.
+    if (ultimoProdutoCJ && ultimoProdutoCJ.idFornecedor === idFornecedorAtual) {
+      corpo.imagemUrl = ultimoProdutoCJ.imagemPrincipal || '';
+      corpo.imagens = ultimoProdutoCJ.imagens || [];
+      corpo.skuFornecedor = ultimoProdutoCJ.skuFornecedor || '';
+      corpo.linkFornecedor = ultimoProdutoCJ.linkFornecedor || (document.getElementById('pn-cj-id').value.trim().match(/^https?:\/\//i) ? document.getElementById('pn-cj-id').value.trim() : null);
+      corpo.pesoGramas = ultimoProdutoCJ.pesoGramas || null;
+      corpo.atributosCJ = ultimoProdutoCJ.dados || null;
+      corpo.variantes = ultimoProdutoCJ.variantes || [];
+    }
+    if(!corpo.nome){ erroEl.textContent = 'O nome do produto é obrigatório.'; erroEl.style.display = 'block'; return; }
+    try{
+      await apiFetch('/produtos', { method: 'POST', body: JSON.stringify(corpo) });
+      window.location.href = 'produtos.html';
+    }catch(e){
+      erroEl.textContent = e.message; erroEl.style.display = 'block';
+    }
+  });
+</script>
+
+  </main>
+</div>
+</body>
+</html>
