@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="anuncio-topo">Portes grátis em encomendas acima de 45€ · Envio para toda a Europa e Estados Unidos</div>
+<div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
 
 <header class="principal">
   <div class="header-linha">
@@ -23,12 +23,12 @@
     </nav>
     <div class="acoes-header">
       <form class="busca-form" action="busca-resultados.html">
-        <i>🔍</i>
+        <span class="icone-svg" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.2 4.2"></path></svg></span>
         <input type="text" name="q" placeholder="Procurar produtos...">
       </form>
-      <a href="conta/login.html" aria-label="Conta">👤</a>
+      <a href="conta/login.html" class="acao-icone" aria-label="Conta"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.7-3.5 2.9-5.4 6.5-5.4s5.8 1.9 6.5 5.4"></path></svg></a>
       <button class="botao-carrinho" aria-label="Carrinho">
-        🛍️<span class="contador-carrinho">0</span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg><span class="contador-carrinho">0</span>
       </button>
     </div>
   </div>
@@ -36,23 +36,11 @@
 
 <div class="conteudo-simples" style="max-width:var(--max);text-align:center;padding-top:50px">
 <h1>Kits e combos</h1>
-<p style="max-width:520px;margin:0 auto">Rotinas completas, pensadas para cada objetivo — com desconto face à compra individual.</p>
+<p style="max-width:520px;margin:0 auto">Seleções de produtos publicados na Lúmina. Os preços e a disponibilidade são carregados do catálogo real.</p>
 </div>
-<div class="grade-produtos" style="max-width:var(--max);margin:30px auto;padding:0 32px 90px">
-  <a href="produto.html" class="cartao-produto">
-    <div class="imagem-produto"><div class="mini-frasco"></div></div>
-    <div class="info-produto"><div class="categoria-produto">Kit · Hidratação</div><h3>Rotina hidratante completa</h3><div class="preco">49,90 €</div></div>
-  </a>
-  <a href="produto.html" class="cartao-produto">
-    <div class="imagem-produto"><div class="mini-frasco"></div></div>
-    <div class="info-produto"><div class="categoria-produto">Kit · Anti-idade</div><h3>Rotina antissinais dia e noite</h3><div class="preco">64,90 €</div></div>
-  </a>
-  <a href="produto.html" class="cartao-produto">
-    <div class="imagem-produto"><div class="mini-frasco"></div></div>
-    <div class="info-produto"><div class="categoria-produto">Kit · Cabelo</div><h3>Kit reparação capilar</h3><div class="preco">39,90 €</div></div>
-  </a>
-</div>
+<div class="grade-produtos" id="selecoes-reais" style="max-width:var(--max);margin:30px auto;padding:0 32px 90px"></div>
 
+<script>document.addEventListener('DOMContentLoaded',async()=>{try{const ps=await apiFetch('/produtos');const el=document.getElementById('selecoes-reais');if(!el)return;el.innerHTML=ps.slice(0,6).map(p=>`<a href="produto.html?id=${p.id}" class="cartao-produto"><div class="imagem-produto">${p.imagem_principal?`<img src="${p.imagem_principal}" alt="" loading="lazy">`:''}</div><div class="info-produto"><div class="categoria-produto">${p.categoria||''}</div><h3>${p.nome}</h3><div class="preco">${(window.LUMINA?window.LUMINA.money(Number(p.precoVendaEUR||0)):Number(p.precoVendaEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'}))}</div></div></a>`).join('')||'<p>Ainda não há produtos publicados.</p>';}catch(e){}});</script>
 <footer class="rodape">
   <div class="grade-rodape">
     <div>
@@ -96,7 +84,7 @@
 <div class="drawer-carrinho">
   <div class="cabecalho-drawer">
     <h3 style="font-size:18px">O seu carrinho</h3>
-    <button class="fechar-carrinho" aria-label="Fechar">✕</button>
+    <button class="fechar-carrinho" aria-label="Fechar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
   </div>
   <div class="itens-drawer"></div>
   <div class="rodape-drawer">
@@ -107,5 +95,6 @@
 
 <script src="js/api.js"></script>
 <script src="js/script.js"></script>
+<script src="/js/i18n.js" defer></script>
 </body>
 </html>

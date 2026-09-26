@@ -15,11 +15,11 @@ function atualizarContadorCarrinho(){
     el.style.display = total > 0 ? 'flex' : 'none';
   });
 }
-function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1){
+function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados = {}){
   const itens = lerCarrinho();
   const existente = itens.find(i => i.produtoId === produtoId);
-  if(existente){ existente.quantidade += quantidade; }
-  else{ itens.push({ produtoId, nome, preco, quantidade }); }
+  if(existente && (existente.idVariante || null) === (metadados.varianteId || null)){ existente.quantidade += quantidade; }
+  else{ itens.push({ produtoId, nome, preco, quantidade, idVariante: metadados.varianteId || null, idFornecedorVariante: metadados.idFornecedorVariante || null, skuVariante: metadados.skuVariante || null }); }
   guardarCarrinho(itens);
   mostrarToast(`${nome} adicionado ao carrinho`);
   renderizarDrawerCarrinho();
@@ -38,11 +38,11 @@ async function carregarProdutosNaGrade(seletorContainer, limite){
     }
     container.innerHTML = lista.map(p => `
       <a href="produto.html?id=${p.id}" class="cartao-produto">
-        <div class="imagem-produto"><div class="mini-frasco"></div></div>
+        <div class="imagem-produto">${p.imagem_principal ? `<img src="${p.imagem_principal}" alt="" loading="lazy">` : ""}</div>
         <div class="info-produto">
           <div class="categoria-produto">${p.categoria || ''}</div>
           <h3>${p.nome}</h3>
-          <div class="preco">${p.precoVendaEUR.toFixed(2)} €</div>
+          <div class="preco">${window.LUMINA?window.LUMINA.money(p.precoVendaEUR):p.precoVendaEUR.toFixed(2)+" €"}</div>
           <button class="botao-add-rapido" data-id="${p.id}" data-nome="${p.nome}" data-preco="${p.precoVendaEUR}">Adicionar ao carrinho</button>
         </div>
       </a>
@@ -81,7 +81,7 @@ function renderizarDrawerCarrinho(){
   `).join('');
   const subtotal = itens.reduce((soma, i) => soma + i.preco * i.quantidade, 0);
   const spanSubtotal = document.querySelector('.valor-subtotal');
-  if(spanSubtotal) spanSubtotal.textContent = `€${subtotal.toFixed(2)}`;
+  if(spanSubtotal) spanSubtotal.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`;
 }
 
 // ---------- Toast ----------
@@ -216,8 +216,8 @@ function renderizarPaginaCarrinho(){
     `).join('');
   }
   const subtotal = itens.reduce((s,i)=> s + i.preco*i.quantidade, 0);
-  document.querySelectorAll('.valor-subtotal-pagina').forEach(el => el.textContent = `€${subtotal.toFixed(2)}`);
-  document.querySelectorAll('.valor-total-pagina').forEach(el => el.textContent = `€${(subtotal >= 45 || subtotal===0 ? subtotal : subtotal+4.90).toFixed(2)}`);
+  document.querySelectorAll('.valor-subtotal-pagina').forEach(el => el.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`);
+  document.querySelectorAll('.valor-total-pagina').forEach(el => el.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`);
 }
 function removerDoCarrinho(indice){
   const itens = lerCarrinho();
