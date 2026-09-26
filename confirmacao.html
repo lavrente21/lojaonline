@@ -35,7 +35,7 @@
 </header>
 
 <div class="caixa-central" style="text-align:center;max-width:520px">
-  <div style="font-size:50px;margin-bottom:14px" id="conf-icone">✅</div>
+  <div style="font-size:50px;margin-bottom:14px" id="conf-icone"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.6 2.7L16.5 9"></path></svg></div>
   <h1 id="conf-titulo">Encomenda confirmada!</h1>
   <p class="aviso" id="conf-mensagem">A carregar os detalhes do seu pedido...</p>
   <div class="cartao-conta" style="text-align:left" id="conf-caixa-pagamento"></div>
@@ -69,7 +69,7 @@
       ? 'O pedido será encaminhado para o agente de carga configurado e o rastreio será atualizado quando estiver disponível.'
       : 'O prazo de entrega será atualizado com base na confirmação logística do fornecedor.';
   } else {
-    document.getElementById('conf-icone').textContent = '🛒';
+    document.getElementById('conf-icone').innerHTML = `<svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg>`;
     document.getElementById('conf-titulo').textContent = 'Nenhum pedido encontrado';
     document.getElementById('conf-mensagem').textContent = 'Não encontrámos os detalhes de nenhuma compra recente.';
   }

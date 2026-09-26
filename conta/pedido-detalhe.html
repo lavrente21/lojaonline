@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pedido #LUM-48213 — Lúmina</title>
+<title>Detalhe do pedido — Lúmina</title>
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -34,7 +34,7 @@
   </div>
 </header>
 
-<nav class="migalha" style="padding-left:32px">Home / Conta / <span>Pedido #LUM-48213</span></nav>
+<nav class="migalha" style="padding-left:32px">Home / Conta / <span id="pd-migalha">Pedido</span></nav>
 <div class="layout-conta">
   <ul class="menu-conta"><li><a href="painel.html" class="">Visão geral</a></li>
 <li><a href="meus-pedidos.html" class="ativo">Meus pedidos</a></li>
@@ -45,11 +45,7 @@
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta">
-    <h2>Encomenda #LUM-48213</h2>
-    <p style="font-size:13.5px;color:#8A7A70;margin-bottom:16px">Estado: <span class="badge-status enviado">Enviado</span> · Rastreio: BKY928374652PT</p>
-    <div class="linha-resumo"><span>Sérum de vitamina C ×1</span><span>32,90 €</span></div>
-    <div class="linha-resumo"><span>Portes</span><span id="pd-portes">—</span></div>
-    <div class="linha-resumo total"><span>Total</span><span>37,80 €</span></div>
+    <h2 id="pd-titulo">Encomenda</h2><p id="pd-estado" style="font-size:13.5px;color:#8A7A70;margin-bottom:16px"></p><div id="pd-itens"></div><div class="linha-resumo"><span>Portes</span><span id="pd-portes">—</span></div><div class="linha-resumo total"><span>Total</span><span id="pd-total">—</span></div>
   </div>
 </div>
 </div>
@@ -106,7 +102,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const n=new URLSearchParams(location.search).get('numero');if(!n)return;try{const p=await apiFetch('/pedidos/meus/'+encodeURIComponent(n));document.getElementById('pd-titulo').textContent='Encomenda #'+p.numeroPedido;document.getElementById('pd-migalha').textContent='Pedido #'+p.numeroPedido;document.getElementById('pd-estado').textContent='Estado: '+p.estado;document.getElementById('pd-itens').innerHTML=(p.itens||[]).map(i=>`<div class="linha-resumo"><span>${i.nome_produto||i.nome||'Produto'} ×${i.quantidade||1}</span><span>${Number(i.subtotal_eur||i.preco_unitario_eur||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'})}</span></div>`).join('');document.getElementById('pd-portes').textContent=p.totalEUR? 'Incluído no total':'—';document.getElementById('pd-total').textContent=Number(p.totalEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'});}catch(e){document.getElementById('pd-estado').textContent=e.message}})();</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

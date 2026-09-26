@@ -26,39 +26,66 @@ function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados =
 }
 
 // ---------- Carregar produtos reais da API (loja.html e index.html) ----------
-async function carregarProdutosNaGrade(seletorContainer, limite){
-  const container = document.querySelector(seletorContainer);
-  if(!container) return;
-  try{
-    const produtos = await apiFetch('/produtos');
-    const lista = limite ? produtos.slice(0, limite) : produtos;
-    if(lista.length === 0){
-      container.innerHTML = '<p style="grid-column:1/-1;color:#8A7A70;font-size:14px">Ainda não há produtos publicados.</p>';
-      return;
-    }
-    container.innerHTML = lista.map(p => `
-      <a href="produto.html?id=${p.id}" class="cartao-produto">
-        <div class="imagem-produto">${p.imagem_principal ? `<img src="${p.imagem_principal}" alt="" loading="lazy">` : ""}</div>
-        <div class="info-produto">
-          <div class="categoria-produto">${p.categoria || ''}</div>
-          <h3>${p.nome}</h3>
-          <div class="preco-produto-adminfront">${p.promocaoAtiva&&Number(p.promocaoPrecoEUR)>0&&Number(p.promocaoPrecoEUR)<Number(p.precoVendaEUR)?`<del class="preco-anterior" data-lumina-eur="${Number(p.precoVendaEUR)}">${window.LUMINA?window.LUMINA.money(Number(p.precoVendaEUR)):Number(p.precoVendaEUR).toFixed(2)+" €"}</del>`:''}<div class="preco" data-lumina-eur="${Number((p.precoAtualEUR??p.precoVendaEUR)||0)}">${window.LUMINA?window.LUMINA.money((p.precoAtualEUR??p.precoVendaEUR)):(p.precoAtualEUR??p.precoVendaEUR).toFixed(2)+" €"}</div></div>
-          <button class="botao-add-rapido" data-id="${p.id}" data-nome="${p.nome}" data-preco="${(p.precoAtualEUR??p.precoVendaEUR)}" data-imagem="${encodeURIComponent(p.imagem_principal || '')}">Adicionar ao carrinho</button>
-        </div>
-      </a>
-    `).join('');
-    // Religar os novos botões (foram criados depois do DOMContentLoaded inicial)
-    container.querySelectorAll('.botao-add-rapido').forEach(botao => {
-      botao.addEventListener('click', e => {
-        e.preventDefault(); e.stopPropagation();
-        adicionarAoCarrinho(botao.dataset.id, botao.dataset.nome, parseFloat(botao.dataset.preco), 1, {imagem: decodeURIComponent(botao.dataset.imagem || '')});
-      });
-    });
-  }catch(e){
-    console.error('Não foi possível carregar produtos da API:', e.message);
-    container.innerHTML = '<p style="grid-column:1/-1;color:#8A7A70;font-size:14px">Não foi possível ligar ao servidor. Confirme que o backend está a correr (node server.js).</p>';
-  }
+function escHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function cardProduto(p){
+  const preco=Number(p.precoAtualEUR??p.precoVendaEUR??0);
+  const venda=Number(p.precoVendaEUR??0);
+  const promo=p.promocaoAtiva&&Number(p.promocaoPrecoEUR)>0&&Number(p.promocaoPrecoEUR)<venda;
+  const tags=String(p.etiqueta||'').split(/\s+/).filter(Boolean).slice(0,2);
+  const badges=[p.destaque?'<span class="selo-produto">Destaque</span>':'',...tags.map(t=>`<span class="selo-produto selo-tag">${escHtml(t)}</span>`),promo?'<span class="selo-produto selo-promocao">Promoção</span>':''].filter(Boolean).join('');
+  const indisponivel=Number(p.stock||0)<=0;
+  return `<article class="cartao-produto${indisponivel?' produto-indisponivel':''}">
+    <a href="produto.html?id=${encodeURIComponent(p.id)}" class="cartao-produto-link">
+      <div class="imagem-produto">${badges}${p.imagemPrincipal?`<img src="${escHtml(p.imagemPrincipal)}" alt="${escHtml(p.imagemAlt||p.nome)}" loading="lazy">`:''}</div>
+      <div class="info-produto"><div class="categoria-produto">${escHtml(p.categoria||'')}</div><h3>${escHtml(p.nome)}</h3>
+      <div class="preco-produto-adminfront">${promo?`<del class="preco-anterior" data-lumina-eur="${venda}">${window.LUMINA?window.LUMINA.money(venda):venda.toFixed(2)+' €'}</del>`:''}<div class="preco" data-lumina-eur="${preco}">${window.LUMINA?window.LUMINA.money(preco):preco.toFixed(2)+' €'}</div></div>
+      ${indisponivel?'<small class="produto-stock-indisponivel">Indisponível</small>':''}</div>
+    </a>
+    ${indisponivel?'':`<button class="botao-add-rapido" data-id="${p.id}" data-nome="${escHtml(p.nome)}" data-preco="${preco}" data-imagem="${encodeURIComponent(p.imagemPrincipal||'')}">Adicionar ao carrinho</button>`}
+  </article>`;
 }
+async function carregarProdutosNaGrade(seletorContainer, opcoes={}){
+  const container=document.querySelector(seletorContainer); if(!container)return;
+  try{
+    const q=new URLSearchParams();
+    if(opcoes.destaque)q.set('destaque','true');
+    if(opcoes.promocao)q.set('promocao','true');
+    if(opcoes.categoria)q.set('categoria',opcoes.categoria);
+    if(opcoes.tag)q.set('tag',opcoes.tag);
+    if(opcoes.q)q.set('q',opcoes.q);
+    if(opcoes.ordenar)q.set('ordenar',opcoes.ordenar);
+    if(opcoes.limit)q.set('limite',String(opcoes.limit));
+    const produtos=await apiFetch('/produtos'+(q.toString()?'?'+q:'') );
+    if(!produtos.length){container.innerHTML='<p class="catalogo-vazio">Ainda não há produtos publicados nesta seleção.</p>';return;}
+    container.innerHTML=produtos.map(cardProduto).join('');
+    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
+  }catch(e){console.error(e);container.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';}
+}
+function obterFiltrosLoja(){
+  const params=new URLSearchParams(location.search);
+  const categoriaPagina=params.get('cat')||'';
+  const categorias=[...document.querySelectorAll('[data-filtro-categoria]:checked')].map(x=>x.dataset.filtroCategoria);
+  const pele=[...document.querySelectorAll('[data-filtro-pele]:checked')].map(x=>x.dataset.filtroPele);
+  const cabelo=[...document.querySelectorAll('[data-filtro-cabelo]:checked')].map(x=>x.dataset.filtroCabelo);
+  const tags=[...document.querySelectorAll('[data-filtro-tag]:checked')].map(x=>x.dataset.filtroTag);
+  const promo=document.querySelector('[data-filtro-promocao]')?.checked; const destaque=document.querySelector('[data-filtro-destaque]')?.checked;
+  return {q:params.get('q')||'',categoria:categorias[0]||categoriaPagina||'',tag:tags[0]||'',promocao:!!promo||params.get('promocao')==='true',destaque:!!destaque||params.get('destaque')==='true',ordenar:document.querySelector('.barra-loja select')?.value||'destaques',pele,cabelo};
+}
+async function carregarLojaComFiltros(){
+  const container=document.querySelector('.grade-produtos.loja');if(!container)return;
+  const f=obterFiltrosLoja();
+  const q=new URLSearchParams();if(f.q)q.set('q',f.q);if(f.categoria)q.set('categoria',f.categoria);if(f.tag)q.set('tag',f.tag);if(f.promocao)q.set('promocao','true');if(f.destaque)q.set('destaque','true');
+  if(f.ordenar==='Preço: menor para maior')q.set('ordenar','preco_asc');else if(f.ordenar==='Preço: maior para menor')q.set('ordenar','preco_desc');else if(f.ordenar==='Novidades')q.set('ordenar','novidades');else q.set('ordenar','destaques');
+  try{let produtos=await apiFetch('/produtos'+(q.toString()?'?'+q:''));
+    const match=(p,key,vals)=>!vals.length||vals.some(v=>String(p[key]||'').toLowerCase().split(/[,;\n]+|\s+/).includes(v.toLowerCase()));
+    produtos=produtos.filter(p=>match(p,'tipoPele',f.pele)||!f.pele.length).filter(p=>match(p,'tipoCabelo',f.cabelo)||!f.cabelo.length);
+    container.innerHTML=produtos.length?produtos.map(cardProduto).join(''):'<p class="catalogo-vazio">Não existem produtos para os filtros selecionados.</p>';
+    const contador=document.querySelector('[data-contador-produtos]');if(contador)contador.textContent=`${produtos.length} ${produtos.length===1?'produto':'produtos'}`;
+    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
+  }catch(e){container.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';}
+}
+function iniciarFiltrosLoja(){document.querySelectorAll('.filtros input').forEach(i=>i.addEventListener('change',carregarLojaComFiltros));document.querySelector('.barra-loja select')?.addEventListener('change',carregarLojaComFiltros);}
+
 function renderizarDrawerCarrinho(){
   const container = document.querySelector('.itens-drawer');
   const rodape = document.querySelector('.rodape-drawer');
@@ -167,7 +194,7 @@ async function carregarHeroReal(){
   const nome=document.getElementById('hero-produto-nome');
   if(!hero || !media || !nome) return;
   try{
-    const produtos=await apiFetch('/produtos');
+    const produtos=await apiFetch('/produtos?destaque=true&limite=1');
     const p=Array.isArray(produtos) && produtos[0];
     if(!p) return;
     hero.href=`produto.html?id=${encodeURIComponent(p.id)}`;
@@ -201,9 +228,11 @@ document.addEventListener('DOMContentLoaded', () => {
       adicionarAoCarrinho(id, nome, preco, quantidade, {imagem: botao.dataset.imagem || null});
     });
   });
-  carregarProdutosNaGrade('.grade-produtos.loja');
+  iniciarFiltrosLoja();
+  carregarLojaComFiltros();
   carregarHeroReal();
-  carregarProdutosNaGrade('.grade-produtos-destaque', 4);
+  carregarProdutosNaGrade('.grade-produtos-destaque', {destaque:true,limit:4});
+  carregarProdutosNaGrade('.grade-promocoes', {promocao:true});
 });
 
 // ---------- FAQ acordeão ----------

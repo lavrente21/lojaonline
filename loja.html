@@ -41,17 +41,17 @@
   <aside class="filtros">
     <div class="grupo-filtro">
       <h4>Categoria</h4>
-      <label><input type="checkbox"> Skincare</label>
-      <label><input type="checkbox"> Hair care</label>
-      <label><input type="checkbox"> Body care</label>
-      <label><input type="checkbox"> Maquilhagem</label>
+      <label><input type="checkbox" data-filtro-categoria="Skincare"> Skincare</label>
+      <label><input type="checkbox" data-filtro-categoria="Hair care"> Hair care</label>
+      <label><input type="checkbox" data-filtro-categoria="Body care"> Body care</label>
+      <label><input type="checkbox" data-filtro-categoria="Maquilhagem"> Maquilhagem</label>
     </div>
     <div class="grupo-filtro">
       <h4>Tipo de pele</h4>
-      <label><input type="checkbox"> Oleosa</label>
-      <label><input type="checkbox"> Seca</label>
-      <label><input type="checkbox"> Mista</label>
-      <label><input type="checkbox"> Sensível</label>
+      <label><input type="checkbox" data-filtro-pele="oleosa"> Oleosa</label>
+      <label><input type="checkbox" data-filtro-pele="seca"> Seca</label>
+      <label><input type="checkbox" data-filtro-pele="mista"> Mista</label>
+      <label><input type="checkbox" data-filtro-pele="sensível"> Sensível</label>
     </div>
     <div class="grupo-filtro">
       <h4>Preocupação</h4>
@@ -62,20 +62,23 @@
     </div>
     <div class="grupo-filtro">
       <h4>Ingrediente-chave</h4>
-      <label><input type="checkbox"> Ácido hialurónico</label>
-      <label><input type="checkbox"> Vitamina C</label>
-      <label><input type="checkbox"> Retinol</label>
+      <label><input type="checkbox" data-filtro-tag="ácido-hialurónico"> Ácido hialurónico</label>
+      <label><input type="checkbox" data-filtro-tag="vitamina-c"> Vitamina C</label>
+      <label><input type="checkbox" data-filtro-tag="retinol"> Retinol</label>
+    </div>
+    <div class="grupo-filtro">
+      <h4>Seleção</h4><label><input type="checkbox" data-filtro-destaque> Apenas destaques</label><label><input type="checkbox" data-filtro-promocao> Apenas promoções ativas</label>
     </div>
     <div class="grupo-filtro">
       <h4>Selos</h4>
-      <label><input type="checkbox"> Vegano</label>
-      <label><input type="checkbox"> Sem parabenos</label>
+      <label><input type="checkbox" data-filtro-tag="vegano"> Vegano</label>
+      <label><input type="checkbox" data-filtro-tag="sem-parabenos"> Sem parabenos</label>
     </div>
   </aside>
 
   <div>
     <div class="barra-loja">
-      <span style="font-size:14px;color:#5B4C43">24 produtos</span>
+      <span data-contador-produtos style="font-size:14px;color:#5B4C43">A carregar produtos...</span>
       <select>
         <option>Mais vendidos</option>
         <option>Preço: menor para maior</option>

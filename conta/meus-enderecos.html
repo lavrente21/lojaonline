@@ -47,7 +47,7 @@
   <div class="cartao-conta">
     <h2>Endereços guardados</h2>
     <div class="grade-enderecos">
-      <div class="cartao-endereco"><strong>Casa</strong>Marta Silva<br>Rua das Flores, 22<br>1200-100 Lisboa, Portugal</div>
+      <div id="enderecos-real"><p class="estado-vazio">A carregar endereços...</p></div>
       <div class="cartao-endereco" style="display:flex;align-items:center;justify-content:center;color:#8A7A70">+ Adicionar novo endereço</div>
     </div>
   </div>
@@ -106,7 +106,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const el=document.getElementById('enderecos-real');try{const rows=await apiFetch('/auth/clientes/enderecos');el.innerHTML=rows.length?rows.map(a=>`<div class="cartao-endereco"><strong>${a.rotulo||'Morada'}</strong>${a.linha1}${a.linha2?'<br>'+a.linha2:''}<br>${a.codigo_postal||''} ${a.cidade}<br>${a.pais}${a.predefinido?' · Predefinida':''}<br><button type="button" onclick="removerEndereco(${a.id})">Remover</button></div>`).join(''):'<p class="estado-vazio">Ainda não existem endereços guardados.</p>';}catch(e){el.innerHTML=`<p class="estado-vazio">${e.message}</p>`;}})();async function removerEndereco(id){if(!confirm('Remover este endereço?'))return;try{await apiFetch('/auth/clientes/enderecos/'+id,{method:'DELETE'});location.reload()}catch(e){alert(e.message)}}</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

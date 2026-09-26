@@ -48,7 +48,7 @@
     <h2>Solicitar troca ou devolução</h2>
     <div class="formulario" style="max-width:none">
       <div class="campo-formulario"><label>Encomenda</label>
-        <select><option>#LUM-48213</option><option>#LUM-47950</option></select>
+        <select id="devolucao-pedido"><option value="">A carregar pedidos...</option></select>
       </div>
       <div class="campo-formulario"><label>Motivo</label>
         <select><option>Produto danificado</option><option>Produto errado</option><option>Não gostei do produto</option><option>Outro</option></select>
@@ -112,7 +112,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{try{const ps=await apiFetch('/pedidos/meus');const el=document.getElementById('devolucao-pedido');el.innerHTML=ps.length?ps.map(p=>`<option value="${p.numeroPedido}">#${p.numeroPedido} · ${p.estado}</option>`).join(''):'<option value="">Não existem pedidos elegíveis.</option>';}catch(e){document.getElementById('devolucao-pedido').innerHTML=`<option value="">${e.message}</option>`}})();</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

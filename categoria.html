@@ -38,13 +38,15 @@
 <div class="conteudo-simples" style="max-width:var(--max);padding-top:0">
 <h1 id="titulo-categoria" style="font-size:30px">Skincare</h1>
 <p>Explore a nossa seleção completa desta categoria. Use os filtros na loja para refinar por tipo de pele, preocupação ou ingrediente.</p>
-<a href="loja.html" class="btn btn-primario">Ver produtos com filtros</a>
+<a id="categoria-ver-loja" href="loja.html" class="btn btn-primario">Ver produtos com filtros</a>
+<div class="grade-produtos loja" style="margin-top:32px"><p class="catalogo-vazio">A carregar produtos...</p></div>
 </div>
 <script>
 const params = new URLSearchParams(window.location.search);
 const nomes = {'skincare':'Skincare','hair':'Hair care','body':'Body care','maquilhagem':'Maquilhagem'};
 const titulo = document.getElementById('titulo-categoria');
 if(titulo && params.get('cat') && nomes[params.get('cat')]) titulo.textContent = nomes[params.get('cat')];
+const link=document.getElementById('categoria-ver-loja'); if(link&&params.get('cat')) link.href='loja.html?cat='+encodeURIComponent(nomes[params.get('cat')]||params.get('cat')); 
 </script>
 
 <footer class="rodape">

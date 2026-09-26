@@ -47,8 +47,8 @@
   <div class="cartao-conta">
     <h2>Os seus dados</h2>
     <div class="formulario" style="max-width:420px">
-      <div class="campo-formulario"><label>Nome completo</label><input type="text" value="Marta Silva"></div>
-      <div class="campo-formulario"><label>E-mail</label><input type="email" value="marta@email.com"></div>
+      <div class="campo-formulario"><label>Nome completo</label><input type="text" id="dp-nome"></div>
+      <div class="campo-formulario"><label>E-mail</label><input type="email" id="dp-email"></div>
       <div class="campo-formulario"><label>Nova palavra-passe</label><input type="password" placeholder="Deixe em branco para manter"></div>
       <button class="btn btn-primario">Guardar alterações</button>
     </div>
@@ -113,7 +113,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{try{const c=await apiFetch('/auth/clientes/me');document.getElementById('dp-nome').value=c.nome||'';document.getElementById('dp-email').value=c.email||'';const tel=document.querySelector('input[type="tel"]');if(tel)tel.value=c.telefone||'';}catch(e){console.error(e)}})();document.querySelector('form')?.addEventListener('submit',async e=>{e.preventDefault();try{const r=await apiFetch('/auth/clientes/me',{method:'PUT',body:JSON.stringify({nome:document.getElementById('dp-nome').value,email:document.getElementById('dp-email').value,telefone:document.querySelector('input[type="tel"]')?.value||null})});alert('Dados guardados.');}catch(e){alert(e.message)}});</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

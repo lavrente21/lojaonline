@@ -45,12 +45,12 @@
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta">
-    <h2>Olá, Marta 👋</h2>
+    <h2 id="conta-nome">Olá</h2>
     <p style="font-size:14px;color:#5B4C43">Bem-vinda de volta à sua conta Lúmina.</p>
   </div>
   <div class="cartao-conta">
     <h2>Última encomenda</h2>
-    <div class="linha-resumo"><span>#LUM-48213 · Enviado</span><span>37,80 €</span></div>
+    <div class="linha-resumo" id="ultima-encomenda"><span>A carregar...</span><span></span></div>
     <a href="meus-pedidos.html" style="font-size:13.5px;color:var(--terracota-escuro)">Ver todos os pedidos →</a>
   </div>
 </div>
@@ -108,7 +108,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{try{const c=await apiFetch('/auth/clientes/me');document.getElementById('conta-nome').textContent='Olá, '+c.nome;const ps=await apiFetch('/pedidos/meus');const u=ps[0];document.getElementById('ultima-encomenda').innerHTML=u?`<span>#${u.numeroPedido} · ${u.estado}</span><span>${Number(u.totalEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'})}</span>`:'<span>Ainda não existem encomendas.</span><span></span>';}catch(e){console.error(e)}})();</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

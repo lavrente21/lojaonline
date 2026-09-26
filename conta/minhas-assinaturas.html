@@ -46,7 +46,7 @@
   <div>
   <div class="cartao-conta">
     <h2>Assinatura ativa</h2>
-    <div class="linha-resumo"><span>Sérum de vitamina C · a cada 6 semanas</span><span>29,60 €</span></div>
+    <div id="assinaturas-real"><p class="estado-vazio">A carregar assinaturas...</p></div>
     <button class="btn btn-secundario" style="margin-top:10px">Gerir assinatura</button>
   </div>
   <div class="estado-vazio">Ainda não tem mais nenhuma assinatura ativa. <a href="../loja.html" style="color:var(--terracota-escuro)">Ver produtos com opção de assinatura</a></div>
@@ -105,7 +105,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const el=document.getElementById('assinaturas-real');try{const rows=await apiFetch('/auth/clientes/assinaturas');el.innerHTML=rows.length?rows.map(a=>`<div class="linha-resumo"><span>${a.nome_produto||a.descricao||'Assinatura'}</span><span>${a.preco_eur?Number(a.preco_eur).toLocaleString('pt-PT',{style:'currency',currency:'EUR'}):''}</span></div>`).join(''):'<p class="estado-vazio">Não existem assinaturas ativas.</p>';}catch(e){el.innerHTML=`<p class="estado-vazio">${e.message}</p>`;}})();</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

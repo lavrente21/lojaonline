@@ -1008,3 +1008,13 @@ section{padding-left:var(--gutter);padding-right:var(--gutter);}
 .opcao-frete small{font-size:10.5px;color:#85776f}
 .opcao-frete b{font-size:12px;white-space:nowrap}
 @media(max-width:640px){.frete-auto-controles{grid-template-columns:1fr}.frete-auto-cabecalho{align-items:flex-start}.opcao-frete{gap:10px}}
+/* Catálogo real */
+.cartao-produto-link{display:block;color:inherit;text-decoration:none;height:100%;}
+.cartao-produto .imagem-produto img{width:100%;height:100%;object-fit:cover;display:block;}
+.selo-produto{z-index:2;display:inline-flex;align-items:center;gap:4px;}
+.selo-produto.selo-tag{top:42px;color:var(--marrom);}
+.selo-produto.selo-promocao{top:auto;bottom:10px;left:10px;color:var(--terracota-escuro);}
+.produto-stock-indisponivel{display:block;margin-top:8px;color:#9a5b4c;font-size:12px;}
+.produto-indisponivel{opacity:.78;}
+.catalogo-vazio{grid-column:1/-1;text-align:center;color:#8A7A70;padding:36px 12px;font-size:14px;}
+@media(max-width:640px){.selo-produto{font-size:9px;padding:3px 7px;}.selo-produto.selo-tag{top:35px;}.catalogo-vazio{padding:28px 8px;}}
