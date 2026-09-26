@@ -91,6 +91,14 @@
 
   <section class="secao-avaliacoes-produto" id="secao-avaliacoes">
     <div class="cabecalho-secao-produto"><div><span class="eyebrow">Experiências</span><h2>Avaliações</h2></div><p id="nota-avaliacoes"></p></div>
+    <form id="form-avaliacao" class="formulario" style="max-width:620px;margin:0 0 24px">
+      <h3>Deixe a sua avaliação</h3>
+      <p class="campo-ajuda">É necessário ter comprado este produto através da sua conta. A avaliação fica pendente de moderação antes de ser publicada.</p>
+      <div class="campo-formulario"><label for="avaliacao-estrelas">Classificação</label><select id="avaliacao-estrelas" required><option value="5">5 estrelas</option><option value="4">4 estrelas</option><option value="3">3 estrelas</option><option value="2">2 estrelas</option><option value="1">1 estrela</option></select></div>
+      <div class="campo-formulario"><label for="avaliacao-comentario">Comentário</label><textarea id="avaliacao-comentario" rows="4" maxlength="3000" placeholder="Conte-nos a sua experiência."></textarea></div>
+      <button class="btn btn-primario" type="submit">Enviar avaliação</button>
+      <p id="avaliacao-msg" role="status" aria-live="polite"></p>
+    </form>
     <div id="avaliacoes-lista" class="lista-avaliacoes"><p>As avaliações serão carregadas quando disponíveis.</p></div>
   </section>
 
@@ -118,7 +126,8 @@ window.addEventListener('DOMContentLoaded', function(){
  window.addEventListener('lumina:currency-ready',()=>{atualizar();if(produto)calcularFrete();});
  window.addEventListener('lumina:currency-changed',()=>{atualizar();if(produto)calcularFrete();});
  $('#pais-frete').value=paisAutomatico();localStorage.setItem('lumina_country',$('#pais-frete').value);$('#pais-frete').addEventListener('change',()=>{localStorage.setItem('lumina_country',$('#pais-frete').value);calcularFrete();});$('#zip-frete').addEventListener('change',calcularFrete);
- $('#botao-favorito').onclick=()=>{if(!produto)return;const ids=JSON.parse(localStorage.getItem('lumina_favoritos')||'[]').map(String);const i=ids.indexOf(String(produto.id));if(i>=0)ids.splice(i,1);else ids.push(String(produto.id));localStorage.setItem('lumina_favoritos',JSON.stringify(ids));$('#botao-favorito').textContent=i>=0?'Guardar':'Guardado';};
+ $('#botao-favorito').onclick=async()=>{if(!produto)return;const token=obterTokenCliente();if(token){try{const atual=await apiFetch('/publico/favoritos');const existe=atual.some(x=>String(x.id)===String(produto.id));if(existe){await apiFetch('/publico/favoritos/'+produto.id,{method:'DELETE'});$('#botao-favorito').textContent='Guardar';}else{await apiFetch('/publico/favoritos/'+produto.id,{method:'POST'});$('#botao-favorito').textContent='Guardado';}}catch(e){$('#mensagem-produto').textContent=e.message;}}else{const ids=JSON.parse(localStorage.getItem('lumina_favoritos')||'[]').map(String);const i=ids.indexOf(String(produto.id));if(i>=0)ids.splice(i,1);else ids.push(String(produto.id));localStorage.setItem('lumina_favoritos',JSON.stringify(ids));$('#botao-favorito').textContent=i>=0?'Guardar':'Guardado';}};
+ document.getElementById('form-avaliacao').addEventListener('submit',async e=>{e.preventDefault();const m=document.getElementById('avaliacao-msg'),b=e.currentTarget.querySelector('button');if(!obterTokenCliente()){m.textContent='Inicie sessão para enviar uma avaliação.';return;}m.textContent='A enviar...';b.disabled=true;try{await apiFetch('/produtos/'+encodeURIComponent(id)+'/avaliacoes',{method:'POST',body:JSON.stringify({estrelas:Number(document.getElementById('avaliacao-estrelas').value),comentario:document.getElementById('avaliacao-comentario').value})});m.textContent='Avaliação enviada para moderação.';e.currentTarget.reset();}catch(err){m.textContent=err.message;}finally{b.disabled=false;}});
  $('#botao-add-produto').onclick=()=>{if(!produto||!variante&&produto.variantes?.length)return;const preco=Number(produto.precoAtualEUR??produto.precoVendaEUR??0)+Number(variante?.preco_extra_eur||0);adicionarAoCarrinho(produto.id,produto.nome,preco,quantidade,{imagem:produto.imagem_principal||produto.imagens?.[0]?.url||null,varianteId:variante?.id||null,idFornecedorVariante:variante?.id_fornecedor_variante||null,skuVariante:variante?.sku_variante||null});$('#mensagem-produto').textContent=T('Produto adicionado ao carrinho.');};
  $('.diminuir').onclick=()=>{quantidade=Math.max(1,quantidade-1);$('#quantidade-produto').textContent=quantidade;calcularFrete();};$('.aumentar').onclick=()=>{quantidade=Math.min(99,quantidade+1);$('#quantidade-produto').textContent=quantidade;calcularFrete();};
  document.querySelectorAll('.botao-aba').forEach(b=>b.onclick=()=>{document.querySelectorAll('.botao-aba').forEach(x=>x.classList.remove('ativa'));document.querySelectorAll('.conteudo-aba').forEach(x=>x.classList.remove('ativa'));b.classList.add('ativa');document.querySelector(`.conteudo-aba[data-aba="${b.dataset.aba}"]`).classList.add('ativa');});

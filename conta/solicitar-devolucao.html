@@ -46,16 +46,17 @@
   <div>
   <div class="cartao-conta">
     <h2>Solicitar troca ou devolução</h2>
-    <div class="formulario" style="max-width:none">
+    <form class="formulario" id="form-devolucao" style="max-width:none">
       <div class="campo-formulario"><label>Encomenda</label>
         <select id="devolucao-pedido"><option value="">A carregar pedidos...</option></select>
       </div>
       <div class="campo-formulario"><label>Motivo</label>
-        <select><option>Produto danificado</option><option>Produto errado</option><option>Não gostei do produto</option><option>Outro</option></select>
+        <select id="devolucao-motivo" required><option>Produto danificado</option><option>Produto errado</option><option>Não gostei do produto</option><option>Outro</option></select>
       </div>
-      <div class="campo-formulario"><label>Detalhes adicionais</label><textarea rows="4"></textarea></div>
-      <button class="btn btn-primario">Enviar pedido</button>
-    </div>
+      <div class="campo-formulario"><label>Detalhes adicionais</label><textarea id="devolucao-detalhes" rows="4" maxlength="5000"></textarea></div>
+      <button class="btn btn-primario" type="submit">Enviar pedido</button>
+      <p id="devolucao-msg" role="status" aria-live="polite"></p>
+    </form>
   </div>
 </div>
 </div>
@@ -112,7 +113,7 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{try{const ps=await apiFetch('/pedidos/meus');const el=document.getElementById('devolucao-pedido');el.innerHTML=ps.length?ps.map(p=>`<option value="${p.numeroPedido}">#${p.numeroPedido} · ${p.estado}</option>`).join(''):'<option value="">Não existem pedidos elegíveis.</option>';}catch(e){document.getElementById('devolucao-pedido').innerHTML=`<option value="">${e.message}</option>`}})();</script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{try{const ps=await apiFetch('/pedidos/meus');const elegiveis=ps.filter(p=>p.estado==='entregue');const el=document.getElementById('devolucao-pedido');el.innerHTML=elegiveis.length?elegiveis.map(p=>`<option value="${p.numeroPedido}">#${p.numeroPedido}</option>`).join(''):'<option value="">Não existem encomendas elegíveis.</option>';}catch(e){document.getElementById('devolucao-pedido').innerHTML=`<option value="">${e.message}</option>`}})();document.getElementById('form-devolucao').addEventListener('submit',async e=>{e.preventDefault();const m=document.getElementById('devolucao-msg'),b=e.currentTarget.querySelector('button');m.textContent='A enviar...';b.disabled=true;try{await apiFetch('/publico/devolucoes',{method:'POST',body:JSON.stringify({numeroPedido:document.getElementById('devolucao-pedido').value,motivo:document.getElementById('devolucao-motivo').value,detalhes:document.getElementById('devolucao-detalhes').value})});m.textContent='Pedido enviado para análise.';e.currentTarget.reset()}catch(err){m.textContent=err.message}finally{b.disabled=false}});</script>
 <script src="../js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

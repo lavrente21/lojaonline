@@ -37,15 +37,16 @@
 <div class="conteudo-simples">
 <h1>Fale connosco</h1>
 <p>Tem alguma dúvida sobre um produto, uma encomenda ou a sua rotina de cuidados? A nossa equipa responde em menos de 24h úteis.</p>
-<div class="formulario" style="max-width:520px;margin-top:24px">
-  <div class="campo-formulario"><label>Nome</label><input type="text"></div>
-  <div class="campo-formulario"><label>E-mail</label><input type="email"></div>
+<form class="formulario" id="form-contato" style="max-width:520px;margin-top:24px">
+  <div class="campo-formulario"><label>Nome</label><input id="contacto-nome" name="nome" type="text" required maxlength="160"></div>
+  <div class="campo-formulario"><label>E-mail</label><input id="contacto-email" name="email" type="email" required maxlength="320"></div>
   <div class="campo-formulario"><label>Assunto</label>
-    <select><option>Dúvida sobre um produto</option><option>Estado da encomenda</option><option>Trocas e devoluções</option><option>Outro assunto</option></select>
+    <select id="contacto-assunto" name="assunto" required><option>Dúvida sobre um produto</option><option>Estado da encomenda</option><option>Trocas e devoluções</option><option>Outro assunto</option></select>
   </div>
-  <div class="campo-formulario"><label>Mensagem</label><textarea rows="5"></textarea></div>
-  <button class="btn btn-primario">Enviar mensagem</button>
-</div>
+  <div class="campo-formulario"><label>Mensagem</label><textarea id="contacto-mensagem" name="mensagem" rows="5" required maxlength="5000"></textarea></div>
+  <button class="btn btn-primario" type="submit">Enviar mensagem</button>
+  <p id="contacto-msg" role="status" aria-live="polite"></p>
+</form>
 <h2 style="margin-top:40px">Outros contactos</h2>
 <p>E-mail: apoio@lumina-beauty.com<br>WhatsApp: +351 900 000 000</p>
 </div>
@@ -103,6 +104,7 @@
 </div>
 
 <script src="js/api.js"></script>
+<script>document.getElementById("form-contato").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById("contacto-msg"),b=f.querySelector("button");m.textContent="A enviar...";b.disabled=true;try{await apiFetch("/publico/contactos",{method:"POST",body:JSON.stringify({nome:document.getElementById("contacto-nome").value,email:document.getElementById("contacto-email").value,assunto:document.getElementById("contacto-assunto").value,mensagem:document.getElementById("contacto-mensagem").value})});m.textContent="Mensagem enviada. A nossa equipa responderá em menos de 24h úteis.";f.reset()}catch(err){m.textContent=err.message}finally{b.disabled=false}});</script>
 <script src="js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
 </body>

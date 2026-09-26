@@ -180,10 +180,13 @@ function iniciarQuantidade(){
 // ---------- Newsletter ----------
 function iniciarNewsletter(){
   document.querySelectorAll('.form-newsletter').forEach(form => {
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      mostrarToast('Obrigado por subscrever! Verifique o seu e-mail.');
-      form.reset();
+      const input=form.querySelector('input[type="email"]'), msg=form.querySelector('.newsletter-msg') || (()=>{const x=document.createElement('p');x.className='newsletter-msg';form.appendChild(x);return x})();
+      const btn=form.querySelector('button'); if(!input)return;
+      msg.textContent='A enviar...'; if(btn)btn.disabled=true;
+      try{await apiFetch('/publico/newsletter',{method:'POST',body:JSON.stringify({email:input.value})});msg.textContent='Subscrição confirmada.';form.reset();}
+      catch(err){msg.textContent=err.message;} finally{if(btn)btn.disabled=false;}
     });
   });
 }
