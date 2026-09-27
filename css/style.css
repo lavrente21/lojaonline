@@ -1037,3 +1037,58 @@ section{padding-left:var(--gutter);padding-right:var(--gutter);}
 .secao-home[hidden]{display:none;}
 @media(max-width:900px){.grade-produtos-home{grid-template-columns:repeat(2,minmax(0,1fr));}.secao-destaques-home{padding-top:58px;}}
 @media(max-width:640px){.cabecalho-secao-home{align-items:center;margin-bottom:18px;}.seta-secao-home{width:42px;height:42px;}.grade-produtos-home{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.grade-produtos-normais{row-gap:18px;}.secao-promocoes-home,.secao-normais-home{padding-top:42px;}}
+
+/* ---------- Home v2: hierarquia editorial e grids diferenciados ---------- */
+.secao-home{padding-top:32px!important;padding-bottom:18px!important;}
+.secao-destaques-home{padding-top:38px!important;}
+.secao-promocoes-home{padding-top:26px!important;}
+.secao-normais-home{padding-top:26px!important;padding-bottom:28px!important;}
+.cabecalho-secao-home{margin-bottom:16px;align-items:center;}
+.cabecalho-secao-home .eyebrow{font-size:10px;letter-spacing:.14em;margin-bottom:4px;color:#8a776d;}
+.cabecalho-secao-home h2{font-family:var(--font-display);font-size:22px;font-weight:500;line-height:1.15;letter-spacing:.01em;}
+
+/* Destaques: cards mais editoriais e imagem ligeiramente maior. */
+.secao-destaques-home .grade-produtos-home{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+.secao-destaques-home .cartao-produto{border:0;background:transparent;}
+.secao-destaques-home .imagem-produto{border-radius:12px;background:#f7f3ef;aspect-ratio:1/1.08;}
+.secao-destaques-home .info-produto{padding:11px 2px 0;}
+.secao-destaques-home .botao-add-rapido{margin-top:4px;}
+.seta-secao-home{width:34px;height:34px;border:0;background:transparent;color:#62564f;}
+.seta-secao-home:hover:not(:disabled){transform:translateX(3px);background:transparent;border-color:transparent;color:#231d19;}
+.seta-secao-home svg{width:19px;height:19px;}
+
+/* Promoções: tratamento próprio, mais focado no preço. */
+.secao-promocoes-home{background:#fbf8f5;max-width:100%;padding-left:max(32px,calc((100vw - var(--max))/2 + 32px))!important;padding-right:max(32px,calc((100vw - var(--max))/2 + 32px))!important;}
+.secao-promocoes-home .grade-produtos-home{max-width:var(--max);margin:0 auto;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.secao-promocoes-home .cartao-produto{border:1px solid #eee5de;background:#fff;border-radius:10px;overflow:hidden;}
+.secao-promocoes-home .imagem-produto{aspect-ratio:1/1;}
+.secao-promocoes-home .info-produto{padding:10px 12px 8px;}
+.secao-promocoes-home .botao-add-rapido{margin:0 12px 12px;width:calc(100% - 24px);}
+.home-ver-mais-wrap{max-width:var(--max);margin:0 auto;justify-content:flex-end;padding-top:10px;}
+.home-ver-mais{min-width:0;padding:4px 0!important;border:0!important;background:transparent!important;color:#76675e!important;font-size:11px!important;font-weight:500!important;text-decoration:underline;text-decoration-color:#cfc1b8;text-underline-offset:4px;}
+.home-ver-mais:hover{color:#2d2622!important;text-decoration-color:#8f7d72;}
+
+/* Normais: catálogo mais compacto, diferente das duas coleções acima. */
+.secao-normais-home .grade-produtos-normais{grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 14px;}
+.secao-normais-home .cartao-produto{border:0;border-bottom:1px solid #eee7e1;border-radius:0;background:transparent;padding-bottom:12px;}
+.secao-normais-home .imagem-produto{aspect-ratio:1/1.02;border-radius:8px;background:#faf8f6;}
+.secao-normais-home .info-produto{padding:9px 1px 0;}
+.secao-normais-home .botao-add-rapido{margin-top:2px;background:transparent;color:#5f5149;border-color:#d9cec6;}
+
+@media(max-width:900px){
+  .secao-destaques-home .grade-produtos-home,.secao-promocoes-home .grade-produtos-home,.secao-normais-home .grade-produtos-normais{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:640px){
+  .secao-home{padding-top:22px!important;padding-bottom:10px!important;}
+  .secao-destaques-home{padding-top:28px!important;}
+  .secao-promocoes-home{padding-top:22px!important;padding-left:16px!important;padding-right:16px!important;}
+  .secao-normais-home{padding-top:22px!important;padding-bottom:18px!important;}
+  .cabecalho-secao-home{margin-bottom:12px;}
+  .cabecalho-secao-home h2{font-size:19px;}
+  .cabecalho-secao-home .eyebrow{font-size:9px;}
+  .secao-destaques-home .grade-produtos-home{gap:10px;}
+  .secao-promocoes-home .grade-produtos-home{gap:9px;}
+  .secao-normais-home .grade-produtos-normais{gap:18px 9px;}
+  .secao-destaques-home .imagem-produto{border-radius:9px;}
+  .home-ver-mais-wrap{padding-top:7px;}
+}
