@@ -160,13 +160,45 @@
   </div>
 </section>
 
-<section>
-  <div class="cabecalho-secao">
-    <h2>Produtos em destaque</h2>
-    <a href="loja.html">Ver tudo</a>
+<section class="secao-home secao-destaques-home">
+  <div class="cabecalho-secao cabecalho-secao-home">
+    <div>
+      <span class="eyebrow">Seleção Lúmina</span>
+      <h2>Destaques</h2>
+    </div>
+    <button class="seta-secao-home" type="button" data-home-next="destaques" aria-label="Ver mais produtos em destaque" hidden>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 12h13"></path><path d="m13 6 6 6-6 6"></path></svg>
+    </button>
   </div>
-  <div class="grade-produtos grade-produtos-destaque">
-    <p style="grid-column:1/-1;color:#8A7A70;font-size:14px">A carregar produtos...</p>
+  <div class="grade-produtos grade-produtos-home grade-produtos-destaque" data-home-grid="destaques">
+    <p class="catalogo-vazio">A carregar produtos...</p>
+  </div>
+</section>
+
+<section class="secao-home secao-promocoes-home">
+  <div class="cabecalho-secao cabecalho-secao-home">
+    <div>
+      <span class="eyebrow">Condições especiais</span>
+      <h2>Promoções</h2>
+    </div>
+  </div>
+  <div class="grade-produtos grade-produtos-home grade-promocoes" data-home-grid="promocoes">
+    <p class="catalogo-vazio">A carregar produtos...</p>
+  </div>
+  <div class="home-ver-mais-wrap" data-home-more="promocoes" hidden>
+    <a href="promocoes.html" class="btn btn-secundario home-ver-mais">Ver mais</a>
+  </div>
+</section>
+
+<section class="secao-home secao-normais-home">
+  <div class="cabecalho-secao cabecalho-secao-home">
+    <div>
+      <span class="eyebrow">Catálogo</span>
+      <h2>Produtos</h2>
+    </div>
+  </div>
+  <div class="grade-produtos grade-produtos-home grade-produtos-normais" data-home-grid="normais">
+    <p class="catalogo-vazio">A carregar produtos...</p>
   </div>
 </section>
 

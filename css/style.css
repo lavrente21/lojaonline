@@ -1018,3 +1018,22 @@ section{padding-left:var(--gutter);padding-right:var(--gutter);}
 .produto-indisponivel{opacity:.78;}
 .catalogo-vazio{grid-column:1/-1;text-align:center;color:#8A7A70;padding:36px 12px;font-size:14px;}
 @media(max-width:640px){.selo-produto{font-size:9px;padding:3px 7px;}.selo-produto.selo-tag{top:35px;}.catalogo-vazio{padding:28px 8px;}}
+
+/* ---------- Home: coleções com hierarquia própria ---------- */
+.secao-home{max-width:var(--max);margin:0 auto;}
+.secao-destaques-home{padding-top:76px;}
+.secao-promocoes-home{padding-top:52px;}
+.secao-normais-home{padding-top:52px;}
+.cabecalho-secao-home{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px;}
+.cabecalho-secao-home .eyebrow{margin-bottom:6px;}
+.cabecalho-secao-home h2{margin:0;}
+.grade-produtos-home{grid-template-columns:repeat(4,minmax(0,1fr));}
+.grade-produtos-normais{row-gap:28px;}
+.seta-secao-home{width:46px;height:46px;border:1px solid var(--linha);border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s,background .2s,border-color .2s;}
+.seta-secao-home:hover:not(:disabled){transform:translateX(3px);background:var(--areia);border-color:#d5c7bd;}
+.seta-secao-home:disabled{opacity:.45;cursor:default;}
+.home-ver-mais-wrap{display:flex;justify-content:center;padding-top:26px;}
+.home-ver-mais{min-width:145px;}
+.secao-home[hidden]{display:none;}
+@media(max-width:900px){.grade-produtos-home{grid-template-columns:repeat(2,minmax(0,1fr));}.secao-destaques-home{padding-top:58px;}}
+@media(max-width:640px){.cabecalho-secao-home{align-items:center;margin-bottom:18px;}.seta-secao-home{width:42px;height:42px;}.grade-produtos-home{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.grade-produtos-normais{row-gap:18px;}.secao-promocoes-home,.secao-normais-home{padding-top:42px;}}

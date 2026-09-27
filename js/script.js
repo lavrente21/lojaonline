@@ -210,6 +210,70 @@ async function carregarHeroReal(){
   }
 }
 
+
+// ---------- Página inicial: destaques, promoções e produtos normais ----------
+function homeCards(container, produtos){
+  container.innerHTML = produtos.length ? produtos.map(cardProduto).join('') : '<p class="catalogo-vazio">Ainda não há produtos publicados nesta seleção.</p>';
+  container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{
+    e.preventDefault(); e.stopPropagation();
+    adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});
+  }));
+}
+
+function homeLimiteVisivel(){ return window.innerWidth <= 640 ? 2 : 4; }
+
+async function carregarHomeColecoes(){
+  const destaques=document.querySelector('[data-home-grid="destaques"]');
+  const promocoes=document.querySelector('[data-home-grid="promocoes"]');
+  const normais=document.querySelector('[data-home-grid="normais"]');
+  if(!destaques && !promocoes && !normais)return;
+  try{
+    const produtos=await apiFetch('/produtos?limite=100&ordenar=destaques');
+    const publicados=Array.isArray(produtos)?produtos.filter(p=>p.ativo!==false):[];
+    const isPromo=p=>p.promocaoAtiva===true && Number(p.promocaoPrecoEUR)>0 && Number(p.promocaoPrecoEUR)<Number(p.precoVendaEUR||0);
+    const listaDestaques=publicados.filter(p=>p.destaque===true);
+    const listaPromocoes=publicados.filter(isPromo);
+    const listaNormais=publicados.filter(p=>p.destaque!==true && !isPromo(p));
+
+    let paginaDestaques=0;
+    const renderDestaques=()=>{
+      if(!destaques)return;
+      const porPagina=homeLimiteVisivel();
+      const inicio=paginaDestaques*porPagina;
+      homeCards(destaques,listaDestaques.slice(inicio,inicio+porPagina));
+      const seta=document.querySelector('[data-home-next="destaques"]');
+      if(seta){
+        seta.hidden=listaDestaques.length<=porPagina;
+        seta.disabled=inicio+porPagina>=listaDestaques.length;
+        seta.setAttribute('aria-label',seta.disabled?'Não há mais produtos em destaque':'Ver mais produtos em destaque');
+      }
+    };
+    renderDestaques();
+    document.querySelector('[data-home-next="destaques"]')?.addEventListener('click',()=>{
+      const porPagina=homeLimiteVisivel();
+      if((paginaDestaques+1)*porPagina>=listaDestaques.length){paginaDestaques=0;}else{paginaDestaques++;}
+      renderDestaques();
+    });
+
+    if(promocoes){
+      homeCards(promocoes,listaPromocoes.slice(0,4));
+      const mais=document.querySelector('[data-home-more="promocoes"]');
+      if(mais)mais.hidden=listaPromocoes.length<=4;
+      if(!listaPromocoes.length)promocoes.closest('.secao-promocoes-home')?.setAttribute('hidden','hidden');
+    }
+
+    if(normais){
+      homeCards(normais,listaNormais);
+      if(!listaNormais.length)normais.closest('.secao-normais-home')?.setAttribute('hidden','hidden');
+    }
+
+    if(!listaDestaques.length)destaques?.closest('.secao-destaques-home')?.setAttribute('hidden','hidden');
+  }catch(e){
+    console.error(e);
+    [destaques,promocoes,normais].forEach(c=>{if(c)c.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';});
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   atualizarContadorCarrinho();
   iniciarAbasProduto();
@@ -234,8 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
   iniciarFiltrosLoja();
   carregarLojaComFiltros();
   carregarHeroReal();
-  carregarProdutosNaGrade('.grade-produtos-destaque', {destaque:true,limit:4});
-  carregarProdutosNaGrade('.grade-promocoes', {promocao:true});
+  carregarHomeColecoes();
 });
 
 // ---------- FAQ acordeão ----------
