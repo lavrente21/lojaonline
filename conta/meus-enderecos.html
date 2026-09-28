@@ -42,15 +42,29 @@
 <li><a href="meus-enderecos.html" class="ativo">Meus endereços</a></li>
 <li><a href="favoritos.html" class="">Favoritos</a></li>
 <li><a href="notificacoes.html" class="">Notificações</a></li>
+<li><a href="solicitar-devolucao.html" class="">Devoluções</a></li>
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta">
     <h2>Endereços guardados</h2>
     <div class="grade-enderecos">
       <div id="enderecos-real"><p class="estado-vazio">A carregar endereços...</p></div>
-      <div class="cartao-endereco" style="display:flex;align-items:center;justify-content:center;color:#8A7A70">+ Adicionar novo endereço</div>
+      <div class="cartao-endereco" id="btn-novo-end" style="display:flex;align-items:center;justify-content:center;color:#8A7A70;cursor:pointer">+ Adicionar novo endereço</div>
     </div>
   </div>
+  <form class="formulario" id="form-endereco" style="display:none;max-width:460px;margin-top:18px">
+    <div class="campo-formulario"><label>Etiqueta (ex: Casa)</label><input id="en-rotulo"></div>
+    <div class="campo-formulario"><label>Morada</label><input id="en-linha1" required></div>
+    <div class="campo-formulario"><label>Complemento</label><input id="en-linha2"></div>
+    <div class="campo-formulario"><label>Cidade</label><input id="en-cidade" required></div>
+    <div class="campo-formulario"><label>Código postal</label><input id="en-cp"></div>
+    <div class="campo-formulario"><label>País (código, ex: PT)</label><input id="en-pais" maxlength="2" required></div>
+    <div class="campo-formulario"><label>Telefone</label><input id="en-tel" type="tel"></div>
+    <label style="display:flex;gap:8px;font-size:14px;margin-bottom:12px"><input type="checkbox" id="en-pred"> Endereço predefinido</label>
+    <button class="btn btn-primario" type="submit">Guardar endereço</button>
+    <p id="en-msg" style="font-size:13.5px;color:#B14B33;margin-top:8px"></p>
+  </form>
+</div>
 </div>
 </div>
 
@@ -106,8 +120,10 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const el=document.getElementById('enderecos-real');try{const rows=await apiFetch('/auth/clientes/enderecos');el.innerHTML=rows.length?rows.map(a=>`<div class="cartao-endereco"><strong>${a.rotulo||'Morada'}</strong>${a.linha1}${a.linha2?'<br>'+a.linha2:''}<br>${a.codigo_postal||''} ${a.cidade}<br>${a.pais}${a.predefinido?' · Predefinida':''}<br><button type="button" onclick="removerEndereco(${a.id})">Remover</button></div>`).join(''):'<p class="estado-vazio">Ainda não existem endereços guardados.</p>';}catch(e){el.innerHTML=`<p class="estado-vazio">${e.message}</p>`;}})();async function removerEndereco(id){if(!confirm('Remover este endereço?'))return;try{await apiFetch('/auth/clientes/enderecos/'+id,{method:'DELETE'});location.reload()}catch(e){alert(e.message)}}</script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const el=document.getElementById('enderecos-real');try{const rows=await apiFetch('/auth/clientes/enderecos');el.innerHTML=rows.length?rows.map(a=>`<div class="cartao-endereco"><strong>${a.rotulo||'Morada'}</strong>${a.linha1}${a.linha2?'<br>'+a.linha2:''}<br>${a.codigo_postal||''} ${a.cidade}<br>${a.pais}${a.predefinido?' · Predefinida':''}<br><button type="button" onclick="removerEndereco(${a.id})">Remover</button></div>`).join(''):'<p class="estado-vazio">Ainda não existem endereços guardados.</p>';}catch(e){el.innerHTML=`<p class="estado-vazio">${e.message}</p>`;}})();document.getElementById('btn-novo-end').onclick=()=>{document.getElementById('form-endereco').style.display='block'};
+document.getElementById('form-endereco').addEventListener('submit',async e=>{e.preventDefault();const v=id=>document.getElementById(id).value.trim();try{await apiFetch('/auth/clientes/enderecos',{method:'POST',body:JSON.stringify({rotulo:v('en-rotulo'),linha1:v('en-linha1'),linha2:v('en-linha2'),cidade:v('en-cidade'),codigoPostal:v('en-cp'),pais:v('en-pais'),telefone:v('en-tel'),predefinido:document.getElementById('en-pred').checked})});location.reload()}catch(err){document.getElementById('en-msg').textContent=err.message}});
+async function removerEndereco(id){if(!confirm('Remover este endereço?'))return;try{await apiFetch('/auth/clientes/enderecos/'+id,{method:'DELETE'});location.reload()}catch(e){alert(e.message)}}</script>
 <script src="../js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
+<script src="../js/i18n.js" defer></script>
 </body>
 </html>

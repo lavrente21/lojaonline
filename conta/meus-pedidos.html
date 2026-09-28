@@ -42,6 +42,7 @@
 <li><a href="meus-enderecos.html" class="">Meus endereços</a></li>
 <li><a href="favoritos.html" class="">Favoritos</a></li>
 <li><a href="notificacoes.html" class="">Notificações</a></li>
+<li><a href="solicitar-devolucao.html" class="">Devoluções</a></li>
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta" style="padding:0;overflow:hidden">
@@ -51,30 +52,7 @@
     </table>
   </div>
 </div>
-<script>
-  if(!obterTokenCliente()){ window.location.href = 'login.html'; }
-  (async () => {
-    try{
-      const pedidos = await apiFetch('/pedidos/meus');
-      const tabela = document.getElementById('mp-tabela');
-      if(pedidos.length === 0){
-        tabela.innerHTML = '<tr><th>Encomenda</th><th>Data</th><th>Estado</th><th>Total</th><th></th></tr><tr><td colspan="5" style="text-align:center;color:#8A7A70">Ainda não fez nenhuma encomenda.</td></tr>';
-        return;
-      }
-      tabela.innerHTML = '<tr><th>Encomenda</th><th>Data</th><th>Estado</th><th>Total</th><th></th></tr>' +
-        pedidos.map(p => `
-          <tr>
-            <td>#${p.id}</td>
-            <td>${new Date(p.criadoEm).toLocaleDateString('pt-PT')}</td>
-            <td><span class="badge-status">${p.estado}</span></td>
-            <td>${p.totalEUR.toFixed(2)} €</td>
-            <td><a href="pedido-detalhe.html?numero=${p.id}" style="color:var(--terracota-escuro);font-size:13px">Ver</a></td>
-          </tr>`).join('');
-    }catch(e){
-      document.getElementById('mp-tabela').innerHTML = `<tr><td colspan="5" style="color:#B14B33">Erro ao carregar: ${e.message}</td></tr>`;
-    }
-  })();
-</script>
+
 </div>
 
 <footer class="rodape">
@@ -130,7 +108,31 @@
 </div>
 
 <script src="../js/api.js"></script>
+<script>
+  if(!obterTokenCliente()){ window.location.href = 'login.html'; }
+  (async () => {
+    try{
+      const pedidos = await apiFetch('/pedidos/meus');
+      const tabela = document.getElementById('mp-tabela');
+      if(pedidos.length === 0){
+        tabela.innerHTML = '<tr><th>Encomenda</th><th>Data</th><th>Estado</th><th>Total</th><th></th></tr><tr><td colspan="5" style="text-align:center;color:#8A7A70">Ainda não fez nenhuma encomenda.</td></tr>';
+        return;
+      }
+      tabela.innerHTML = '<tr><th>Encomenda</th><th>Data</th><th>Estado</th><th>Total</th><th></th></tr>' +
+        pedidos.map(p => `
+          <tr>
+            <td>#${p.numeroPedido}</td>
+            <td>${new Date(p.criadoEm).toLocaleDateString('pt-PT')}</td>
+            <td><span class="badge-status">${estadoPT(p.estado)}</span></td>
+            <td>${Number(p.totalEUR||0).toFixed(2)} €</td>
+            <td><a href="pedido-detalhe.html?numero=${encodeURIComponent(p.numeroPedido)}" style="color:var(--terracota-escuro);font-size:13px">Ver</a></td>
+          </tr>`).join('');
+    }catch(e){
+      document.getElementById('mp-tabela').innerHTML = `<tr><td colspan="5" style="color:#B14B33">Erro ao carregar: ${e.message}</td></tr>`;
+    }
+  })();
+</script>
 <script src="../js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
+<script src="../js/i18n.js" defer></script>
 </body>
 </html>

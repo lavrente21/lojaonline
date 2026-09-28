@@ -118,7 +118,7 @@
   }
 
   async function calcularPortesCheckout(){
-    const itens=lerCarrinho(); if(itens.some(i=>!Number.isInteger(Number(i.produtoId))||Number(i.produtoId)<1||!Number.isInteger(Number(i.quantidade))||Number(i.quantidade)<1)){localStorage.removeItem('lumina_carrinho');renderizarResumoCheckout();throw new Error('O carrinho continha um item inválido e foi limpo. Volte à loja e adicione o produto novamente.');} const pais=document.getElementById('ck-pais').value;
+    const itens=lerCarrinho(); const pais=document.getElementById('ck-pais').value;
     if(!itens.length)return; document.getElementById('ck-portes').textContent='A calcular...';
     try{const d=await apiFetch('/checkout/quote',{method:'POST',body:JSON.stringify({itens,pais,zip:document.getElementById('ck-codigo-postal').value.trim(),moeda:moedaAtual()})});
       const metodos=d.metodos||[]; if(!metodos.length){PORTES_EUR=0;METODO_ENVIO=null;FRETE_USD=null;document.getElementById('ck-frete-opcoes').innerHTML='<p class="nota-frete">Não há método de envio disponível para este destino neste momento.</p>';document.getElementById('ck-portes').textContent='Não disponível';renderizarResumoCheckout();return;}
@@ -150,17 +150,7 @@
     document.getElementById('ck-telefone-obrigatorio').textContent = metodo === 'aoa' ? '(obrigatório para Multicaixa)' : '';
   }
 
-  async function carregarDadosContaCheckout(){
-    if(!obterTokenCliente())return;
-    try{const [cliente,enderecos]=await Promise.all([apiFetch('/auth/clientes/me'),apiFetch('/auth/clientes/enderecos')]);
-      document.getElementById('ck-nome').value=cliente.nome||''; document.getElementById('ck-email').value=cliente.email||''; document.getElementById('ck-telefone').value=cliente.telefone||'';
-      const a=enderecos.find(x=>x.predefinido)||enderecos[0]; if(a){document.getElementById('ck-pais').value=String(a.pais||'PT').toUpperCase();document.getElementById('ck-cidade').value=a.cidade||'';document.getElementById('ck-codigo-postal').value=a.codigo_postal||'';document.getElementById('ck-morada').value=a.linha1||'';}
-    }catch(e){console.warn('Não foi possível pré-preencher a conta no checkout:',e.message)}
-  }
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    await carregarDadosContaCheckout();
-    alternarPagamentoConformePais();
+  document.addEventListener('DOMContentLoaded', () => {
     renderizarResumoCheckout();
     document.getElementById('ck-pais').addEventListener('change', ()=>{localStorage.setItem('lumina_country', document.getElementById('ck-pais').value);alternarPagamentoConformePais();calcularPortesCheckout();});
     document.getElementById('ck-codigo-postal').addEventListener('blur', calcularPortesCheckout);
@@ -185,7 +175,7 @@
       if(!nome || !email || !cidade || !morada){
         erroEl.textContent = 'Preencha nome, e-mail, cidade e morada.'; erroEl.style.display='block'; return;
       }
-      
+      if(!METODO_ENVIO){ erroEl.textContent='Escolha um destino com método de envio disponível antes de continuar.'; erroEl.style.display='block'; return; }
       if(metodo === 'aoa' && !telefone){
         erroEl.textContent = 'O telefone é obrigatório para pagar com Multicaixa Express.'; erroEl.style.display='block'; return;
       }

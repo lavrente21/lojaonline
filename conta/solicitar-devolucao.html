@@ -42,6 +42,7 @@
 <li><a href="meus-enderecos.html" class="">Meus endereços</a></li>
 <li><a href="favoritos.html" class="">Favoritos</a></li>
 <li><a href="notificacoes.html" class="">Notificações</a></li>
+<li><a href="solicitar-devolucao.html" class="ativo">Devoluções</a></li>
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta">
@@ -115,6 +116,6 @@
 
 <script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{try{const ps=await apiFetch('/pedidos/meus');const elegiveis=ps.filter(p=>p.estado==='entregue');const el=document.getElementById('devolucao-pedido');el.innerHTML=elegiveis.length?elegiveis.map(p=>`<option value="${p.numeroPedido}">#${p.numeroPedido}</option>`).join(''):'<option value="">Não existem encomendas elegíveis.</option>';}catch(e){document.getElementById('devolucao-pedido').innerHTML=`<option value="">${e.message}</option>`}})();document.getElementById('form-devolucao').addEventListener('submit',async e=>{e.preventDefault();const m=document.getElementById('devolucao-msg'),b=e.currentTarget.querySelector('button');m.textContent='A enviar...';b.disabled=true;try{await apiFetch('/publico/devolucoes',{method:'POST',body:JSON.stringify({numeroPedido:document.getElementById('devolucao-pedido').value,motivo:document.getElementById('devolucao-motivo').value,detalhes:document.getElementById('devolucao-detalhes').value})});m.textContent='Pedido enviado para análise.';e.currentTarget.reset()}catch(err){m.textContent=err.message}finally{b.disabled=false}});</script>
 <script src="../js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
+<script src="../js/i18n.js" defer></script>
 </body>
 </html>

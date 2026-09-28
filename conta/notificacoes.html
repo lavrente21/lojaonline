@@ -42,6 +42,7 @@
 <li><a href="meus-enderecos.html" class="">Meus endereços</a></li>
 <li><a href="favoritos.html" class="">Favoritos</a></li>
 <li><a href="notificacoes.html" class="ativo">Notificações</a></li>
+<li><a href="solicitar-devolucao.html" class="">Devoluções</a></li>
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta">
@@ -49,7 +50,7 @@
     <label style="display:flex;gap:10px;margin-bottom:14px;font-size:14px"><input type="checkbox" checked> Estado das encomendas</label>
     <label style="display:flex;gap:10px;margin-bottom:14px;font-size:14px"><input type="checkbox" checked> Promoções e novidades</label>
     <label style="display:flex;gap:10px;font-size:14px"><input type="checkbox"> Lembretes de reposição de stock</label>
-    <button class="btn btn-primario" style="margin-top:16px">Guardar preferências</button>
+    <button class="btn btn-primario" style="margin-top:16px" id="nt-guardar">Guardar preferências</button> <span id="nt-msg" style="font-size:13px;margin-left:8px"></span>
   </div>
 </div>
 </div>
@@ -108,6 +109,7 @@
 
 <script src="../js/api.js"></script>
 <script src="../js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
+<script src="../js/i18n.js" defer></script>
+<script>if(!obterTokenCliente())location.href='login.html';const cks=[...document.querySelectorAll('.cartao-conta input[type=checkbox]')];try{const g=JSON.parse(localStorage.getItem('lumina_notif')||'null');if(g)cks.forEach((c,i)=>c.checked=!!g[i])}catch{}document.getElementById('nt-guardar').onclick=()=>{localStorage.setItem('lumina_notif',JSON.stringify(cks.map(c=>c.checked)));document.getElementById('nt-msg').textContent='Guardado neste dispositivo.'}</script>
 </body>
 </html>

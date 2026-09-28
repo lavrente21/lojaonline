@@ -34,10 +34,16 @@
   </div>
 </header>
 
-<div class="artigo-corpo" id="artigo-real"><p class="catalogo-vazio">A carregar artigo...</p></div>
-<script>
-window.addEventListener('DOMContentLoaded',async()=>{const el=document.getElementById('artigo-real');const slug=new URLSearchParams(location.search).get('slug');if(!slug){location.href='blog.html';return;}try{const p=await apiFetch('/publico/conteudos/'+encodeURIComponent(slug));document.title=(p.seo_title||p.titulo)+' — Lúmina';el.innerHTML=`<div class="categoria-blog" style="color:var(--terracota-escuro);font-size:13px;margin-bottom:10px">${String(p.categoria||'').replace(/[<>]/g,'')}</div><h1>${String(p.titulo||'').replace(/[<>]/g,'')}</h1><div class="meta-artigo">Publicado em ${new Date(p.criado_em).toLocaleDateString('pt-PT')}</div>${p.imagem_url?`<div class="capa-artigo"><img src="${String(p.imagem_url).replace(/"/g,'&quot;')}" alt="${String(p.titulo).replace(/"/g,'&quot;')}"></div>`:''}<div>${String(p.corpo||'').split('\n').join('<br>')}</div>`;}catch(e){el.innerHTML=`<p class="catalogo-vazio">${e.message}</p>`;}})();
-</script>
+<div class="artigo-corpo">
+  <div class="categoria-blog" style="color:var(--terracota-escuro);font-size:13px;margin-bottom:10px">Skincare</div>
+  <h1>Como montar a rotina de skincare perfeita</h1>
+  <div class="meta-artigo">Publicado a 3 de agosto de 2026 · 5 min de leitura</div>
+  <div class="capa-artigo"></div>
+  <p>Montar uma rotina de skincare não precisa de ser complicado. O segredo está em três passos essenciais: limpeza, tratamento e proteção — aplicados na ordem certa e com consistência diária.</p>
+  <p>Comece sempre pela limpeza, de manhã e à noite, com um produto adequado ao seu tipo de pele. De seguida, aplique os tratamentos (séruns) enquanto a pele ainda está ligeiramente húmida, o que ajuda na absorção dos ativos.</p>
+  <p>Termine sempre com um hidratante, e de manhã, nunca esqueça a proteção solar — mesmo em dias nublados. Esta rotina simples, mantida ao longo do tempo, costuma trazer resultados muito mais visíveis do que produtos isolados usados sem regularidade.</p>
+  <p>Se ainda não sabe qual é o seu tipo de pele, comece pelo nosso <a href="guia-de-pele.html" style="color:var(--terracota-escuro)">guia de tipo de pele</a> antes de escolher os produtos.</p>
+</div>
 
 <footer class="rodape">
   <div class="grade-rodape">

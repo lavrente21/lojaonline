@@ -42,6 +42,7 @@
 <li><a href="meus-enderecos.html" class="">Meus endereços</a></li>
 <li><a href="favoritos.html" class="">Favoritos</a></li>
 <li><a href="notificacoes.html" class="">Notificações</a></li>
+<li><a href="solicitar-devolucao.html" class="">Devoluções</a></li>
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
   <div class="cartao-conta">
@@ -102,8 +103,8 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const n=new URLSearchParams(location.search).get('numero');if(!n)return;try{const p=await apiFetch('/pedidos/meus/'+encodeURIComponent(n));document.getElementById('pd-titulo').textContent='Encomenda #'+p.numeroPedido;document.getElementById('pd-migalha').textContent='Pedido #'+p.numeroPedido;document.getElementById('pd-estado').textContent='Estado: '+p.estado;document.getElementById('pd-itens').innerHTML=(p.itens||[]).map(i=>`<div class="linha-resumo"><span>${i.nome_produto||i.nome||'Produto'} ×${i.quantidade||1}</span><span>${Number(i.subtotal_eur||(Number(i.preco_unitario_eur||0)*Number(i.quantidade||1))||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'})}</span></div>`).join('');document.getElementById('pd-portes').textContent=p.totalEUR? 'Incluído no total':'—';document.getElementById('pd-total').textContent=Number(p.totalEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'});}catch(e){document.getElementById('pd-estado').textContent=e.message}})();</script>
+<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const n=new URLSearchParams(location.search).get('numero');if(!n)return;try{const p=await apiFetch('/pedidos/meus/'+encodeURIComponent(n));document.getElementById('pd-titulo').textContent='Encomenda #'+p.numeroPedido;document.getElementById('pd-migalha').textContent='Pedido #'+p.numeroPedido;document.getElementById('pd-estado').textContent='Estado: '+estadoPT(p.estado)+(p.pagamento&&p.pagamento.estado==='pendente'?' · Pagamento pendente de confirmação':'');document.getElementById('pd-itens').innerHTML=(p.itens||[]).map(i=>`<div class="linha-resumo"><span>${i.nome_produto||i.nome||'Produto'} ×${i.quantidade||1}</span><span>${Number(i.subtotal_eur||(Number(i.preco_unitario_eur||0)*Number(i.quantidade||1))||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'})}</span></div>`).join('');document.getElementById('pd-portes').textContent=p.totalEUR? 'Incluído no total':'—';document.getElementById('pd-total').textContent=Number(p.totalEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'});}catch(e){document.getElementById('pd-estado').textContent=e.message}})();</script>
 <script src="../js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
+<script src="../js/i18n.js" defer></script>
 </body>
 </html>

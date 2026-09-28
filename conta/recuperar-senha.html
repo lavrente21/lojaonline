@@ -35,13 +35,15 @@
 </header>
 <div class="caixa-central">
   <h1>Recuperar palavra-passe</h1>
-  <p class="aviso">Enviaremos um link de recuperação para o seu e-mail.</p>
+  <p class="aviso">Indique o seu e-mail. A nossa equipa recebe o pedido e ajuda a repor o acesso.</p>
   <div class="formulario">
-    <div class="campo-formulario"><label>E-mail</label><input type="email"></div>
-    <button class="btn btn-primario" style="width:100%">Enviar link</button>
+    <div class="campo-formulario"><label>E-mail</label><input type="email" id="rc-email"></div>
+    <button class="btn btn-primario" style="width:100%" id="rc-botao">Pedir recuperação</button>
+    <p id="rc-msg" style="font-size:13.5px;margin-top:10px"></p>
   </div>
   <p class="link-secundario"><a href="login.html">Voltar ao login</a></p>
 </div>
+<script>document.getElementById('rc-botao').addEventListener('click',async()=>{const email=document.getElementById('rc-email').value.trim(),m=document.getElementById('rc-msg');if(!email){m.style.color='#B14B33';m.textContent='Indique o e-mail.';return}try{await apiFetch('/publico/contactos',{method:'POST',body:JSON.stringify({nome:email,email,assunto:'Recuperação de palavra-passe',mensagem:'Pedido de recuperação de palavra-passe para a conta '+email})});m.style.color='#2E7D4F';m.textContent='Pedido enviado. A nossa equipa vai contactá-lo.'}catch(e){m.style.color='#B14B33';m.textContent=e.message}})</script>
 <footer class="rodape">
   <div class="grade-rodape">
     <div>
@@ -96,6 +98,6 @@
 
 <script src="../js/api.js"></script>
 <script src="../js/script.js"></script>
-<script src="/js/i18n.js" defer></script>
+<script src="../js/i18n.js" defer></script>
 </body>
 </html>
