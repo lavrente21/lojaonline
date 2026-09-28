@@ -1,25 +1,36 @@
 // ---------- Carrinho (armazenado no navegador) ----------
+function normalizarItemCarrinho(item){
+  if(!item||item.produtoId==null)return null;
+  const produtoId=Number(item.produtoId), quantidade=Number(item.quantidade), preco=Number(item.preco);
+  if(!Number.isInteger(produtoId)||produtoId<1||!Number.isInteger(quantidade)||quantidade<1||!Number.isFinite(preco)||preco<0)return null;
+  const idVariante=item.idVariante==null||item.idVariante===''?null:Number(item.idVariante);
+  if(idVariante!==null&&(!Number.isInteger(idVariante)||idVariante<1))return null;
+  return {...item,produtoId,quantidade,preco,idVariante};
+}
 function lerCarrinho(){
-  try{ return JSON.parse(localStorage.getItem('lumina_carrinho')) || []; }
-  catch(e){ return []; }
+  try{ const raw=JSON.parse(localStorage.getItem('lumina_carrinho'))||[]; const limpo=raw.map(normalizarItemCarrinho).filter(Boolean); if(limpo.length!==raw.length)localStorage.setItem('lumina_carrinho',JSON.stringify(limpo)); return limpo; }
+  catch(e){ localStorage.removeItem('lumina_carrinho'); return []; }
 }
 function guardarCarrinho(itens){
-  localStorage.setItem('lumina_carrinho', JSON.stringify(itens));
+  localStorage.setItem('lumina_carrinho', JSON.stringify(itens.map(normalizarItemCarrinho).filter(Boolean)));
   atualizarContadorCarrinho();
 }
 function atualizarContadorCarrinho(){
   const itens = lerCarrinho();
-  const total = itens.reduce((soma, item) => soma + item.quantidade, 0);
+  const total = itens.reduce((soma, item) => soma + Number(item.quantidade||0), 0);
   document.querySelectorAll('.contador-carrinho').forEach(el => {
     el.textContent = total;
     el.style.display = total > 0 ? 'flex' : 'none';
   });
 }
 function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados = {}){
+  const pid=Number(produtoId), price=Number(preco), qty=Number(quantidade);
+  if(!Number.isInteger(pid)||pid<1||!Number.isFinite(price)||price<0||!Number.isInteger(qty)||qty<1){mostrarToast('Não foi possível adicionar este produto ao carrinho.');return;}
   const itens = lerCarrinho();
-  const existente = itens.find(i => i.produtoId === produtoId);
-  if(existente && (existente.idVariante || null) === (metadados.varianteId || null)){ existente.quantidade += quantidade; }
-  else{ itens.push({ produtoId, nome, preco, quantidade, imagem: metadados.imagem || null, idVariante: metadados.varianteId || null, idFornecedorVariante: metadados.idFornecedorVariante || null, skuVariante: metadados.skuVariante || null }); }
+  const varianteId=metadados.varianteId==null||metadados.varianteId===''?null:Number(metadados.varianteId);
+  const existente = itens.find(i => i.produtoId === pid && (i.idVariante||null)===(varianteId||null));
+  if(existente){ existente.quantidade += qty; }
+  else{ itens.push({ produtoId:pid, nome:String(nome||'Produto'), preco:price, quantidade:qty, imagem: metadados.imagem || null, idVariante: varianteId, idFornecedorVariante: metadados.idFornecedorVariante || null, skuVariante: metadados.skuVariante || null }); }
   guardarCarrinho(itens);
   mostrarToast(`${nome} adicionado ao carrinho`);
   renderizarDrawerCarrinho();
@@ -33,7 +44,7 @@ function cardProduto(p){
   const promo=p.promocaoAtiva&&Number(p.promocaoPrecoEUR)>0&&Number(p.promocaoPrecoEUR)<venda;
   const tags=String(p.etiqueta||'').split(/\s+/).filter(Boolean).slice(0,2);
   const badges=[p.destaque?'<span class="selo-produto">Destaque</span>':'',...tags.map(t=>`<span class="selo-produto selo-tag">${escHtml(t)}</span>`),promo?'<span class="selo-produto selo-promocao">Promoção</span>':''].filter(Boolean).join('');
-  const indisponivel=Number(p.stock||0)<=0;
+  const stockDisponivel=Number(p.stockDisponivel ?? p.stock ?? 0); const temVariantes=Boolean(p.temVariantes); const indisponivel=stockDisponivel<=0; const escolherVariante=temVariantes&&!indisponivel;
   return `<article class="cartao-produto${indisponivel?' produto-indisponivel':''}">
     <a href="produto.html?id=${encodeURIComponent(p.id)}" class="cartao-produto-link">
       <div class="imagem-produto">${badges}${p.imagemPrincipal?`<img src="${escHtml(p.imagemPrincipal)}" alt="${escHtml(p.imagemAlt||p.nome)}" loading="lazy">`:''}</div>
@@ -41,7 +52,7 @@ function cardProduto(p){
       <div class="preco-produto-adminfront">${promo?`<del class="preco-anterior" data-lumina-eur="${venda}">${window.LUMINA?window.LUMINA.money(venda):venda.toFixed(2)+' €'}</del>`:''}<div class="preco" data-lumina-eur="${preco}">${window.LUMINA?window.LUMINA.money(preco):preco.toFixed(2)+' €'}</div></div>
       ${indisponivel?'<small class="produto-stock-indisponivel">Indisponível</small>':''}</div>
     </a>
-    ${indisponivel?'':`<button class="botao-add-rapido" data-id="${p.id}" data-nome="${escHtml(p.nome)}" data-preco="${preco}" data-imagem="${encodeURIComponent(p.imagemPrincipal||'')}">Adicionar ao carrinho</button>`}
+    ${indisponivel?'':`<button class="botao-add-rapido" data-id="${p.id}" data-nome="${escHtml(p.nome)}" data-preco="${preco}" data-imagem="${encodeURIComponent(p.imagemPrincipal||'')}">${escolherVariante?'Ver opções':'Adicionar ao carrinho'}</button>`}
   </article>`;
 }
 async function carregarProdutosNaGrade(seletorContainer, opcoes={}){
@@ -58,7 +69,7 @@ async function carregarProdutosNaGrade(seletorContainer, opcoes={}){
     const produtos=await apiFetch('/produtos'+(q.toString()?'?'+q:'') );
     if(!produtos.length){container.innerHTML='<p class="catalogo-vazio">Ainda não há produtos publicados nesta seleção.</p>';return;}
     container.innerHTML=produtos.map(cardProduto).join('');
-    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
+    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();botao.textContent==='Ver opções' ? (location.href='produto.html?id='+encodeURIComponent(botao.dataset.id)) : adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
   }catch(e){console.error(e);container.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';}
 }
 function obterFiltrosLoja(){
@@ -81,7 +92,7 @@ async function carregarLojaComFiltros(){
     produtos=produtos.filter(p=>match(p,'tipoPele',f.pele)||!f.pele.length).filter(p=>match(p,'tipoCabelo',f.cabelo)||!f.cabelo.length);
     container.innerHTML=produtos.length?produtos.map(cardProduto).join(''):'<p class="catalogo-vazio">Não existem produtos para os filtros selecionados.</p>';
     const contador=document.querySelector('[data-contador-produtos]');if(contador)contador.textContent=`${produtos.length} ${produtos.length===1?'produto':'produtos'}`;
-    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
+    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();botao.textContent==='Ver opções' ? (location.href='produto.html?id='+encodeURIComponent(botao.dataset.id)) : adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
   }catch(e){container.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';}
 }
 function iniciarFiltrosLoja(){document.querySelectorAll('.filtros input').forEach(i=>i.addEventListener('change',carregarLojaComFiltros));document.querySelector('.barra-loja select')?.addEventListener('change',carregarLojaComFiltros);}
@@ -216,7 +227,7 @@ function homeCards(container, produtos){
   container.innerHTML = produtos.length ? produtos.map(cardProduto).join('') : '<p class="catalogo-vazio">Ainda não há produtos publicados nesta seleção.</p>';
   container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{
     e.preventDefault(); e.stopPropagation();
-    adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});
+    botao.textContent==='Ver opções' ? (location.href='produto.html?id='+encodeURIComponent(botao.dataset.id)) : adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});
   }));
 }
 

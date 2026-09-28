@@ -38,30 +38,10 @@
 <h1>Blog Lúmina</h1>
 <p style="max-width:520px;margin:0 auto">Dicas de rotina, ingredientes explicados e novidades do mundo da beleza.</p>
 </div>
-<div class="grade-blog"><a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Skincare</div><h3>Como montar a rotina de skincare perfeita</h3><p>Passo a passo simples para organizar limpeza, tratamento e proteção.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Ingredientes</div><h3>Vitamina C vs Retinol: qual escolher?</h3><p>Entenda as diferenças e como combinar estes dois ativos sem irritar a pele.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Maquilhagem</div><h3>Como escolher o tom certo de base</h3><p>Dicas práticas para testar e acertar no tom à primeira compra.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Hair care</div><h3>Frizz: porque acontece e como controlar</h3><p>As causas mais comuns do frizz e os produtos que realmente ajudam.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Body care</div><h3>Rotina de corpo para os dias frios</h3><p>Como manter a pele do corpo hidratada durante o inverno.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Sustentabilidade</div><h3>O que significa realmente 'cruelty-free'</h3><p>Explicamos o que este selo garante e como identificá-lo.</p></div>
-</a></div>
+<div class="grade-blog" id="blog-real"><p class="catalogo-vazio">A carregar artigos...</p></div>
+<script>
+window.addEventListener('DOMContentLoaded',async()=>{const el=document.getElementById('blog-real');try{const posts=await apiFetch('/publico/conteudos?limite=20');el.innerHTML=posts.length?posts.map(p=>`<a href="artigo.html?slug=${encodeURIComponent(p.slug)}" class="cartao-blog"><div class="capa-blog">${p.imagem_url?`<img src="${String(p.imagem_url).replace(/"/g,'&quot;')}" alt="${String(p.titulo).replace(/"/g,'&quot;')}" loading="lazy">`:''}</div><div class="corpo-blog"><div class="categoria-blog">${String(p.categoria||'').replace(/[<>]/g,'')}</div><h3>${String(p.titulo||'').replace(/[<>]/g,'')}</h3><p>${String(p.corpo||'').replace(/[<>]/g,'').slice(0,150)}${String(p.corpo||'').length>150?'…':''}</p></div></a>`).join(''):'<p class="catalogo-vazio">Ainda não existem artigos publicados.</p>';}catch(e){el.innerHTML=`<p class="catalogo-vazio">${e.message}</p>`;}})();</script>
+
 <footer class="rodape">
   <div class="grade-rodape">
     <div>
