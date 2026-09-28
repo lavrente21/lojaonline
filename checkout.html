@@ -201,7 +201,9 @@
           moeda: resultado.moeda || corpo.moeda,
           rota: resultado.rotaEnvio,
           moeda: resultado.moeda || corpo.moeda,
-          idCobranca: resultado.pagamento.idCobranca || ''
+          idCobranca: resultado.pagamento.idCobranca || '',
+          metodo: resultado.pagamento.metodo || '',
+          mensagem: resultado.pagamento.mensagem || ''
         });
         window.location.href = 'confirmacao.html?' + params.toString();
       }catch(e){

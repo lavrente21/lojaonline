@@ -46,19 +46,23 @@
   const params = new URLSearchParams(window.location.search);
   const numero = params.get('numero');
   const totalEUR = params.get('totalEUR');
-  const totalAOA = params.get('totalAOA');
+  const totalMoeda = params.get('totalMoeda') || params.get('totalAOA');
   const rota = params.get('rota');
   const moeda = params.get('moeda');
   const idCobranca = params.get('idCobranca');
+  const metodoPag = params.get('metodo');
+  const mensagemPag = params.get('mensagem');
 
   if(numero){
     document.getElementById('conf-mensagem').innerHTML =
       `Obrigado pela sua compra. O número da sua encomenda é <strong>#${numero}</strong>. Enviámos os detalhes para o seu e-mail.`;
 
     const caixa = document.getElementById('conf-caixa-pagamento');
-    if(moeda === 'AOA'){
+    if(metodoPag === 'manual'){
+      caixa.innerHTML = `<div class="linha-resumo total"><span>Total a pagar</span><span>${Number(totalMoeda||totalEUR||0).toLocaleString('pt-PT')} ${moeda||'EUR'}</span></div><p style="font-size:13px;color:#5B4C43;margin-top:10px">${mensagemPag || 'A nossa equipa vai contactá-lo para confirmar o pagamento.'}<br>O pedido avança para processamento assim que o pagamento for confirmado.</p>`;
+    } else if(moeda === 'AOA'){
       caixa.innerHTML = `
-        <div class="linha-resumo total"><span>Total a pagar</span><span>${Number(totalAOA).toLocaleString('pt-PT')} AOA</span></div>
+        <div class="linha-resumo total"><span>Total a pagar</span><span>${Number(totalMoeda||totalEUR||0).toLocaleString('pt-PT')} ${moeda||'EUR'}</span></div>
         <p style="font-size:13px;color:#5B4C43;margin-top:10px">Referência Multicaixa Express: <strong>${idCobranca}</strong><br>Confirme o pagamento na app MCX Express no seu telemóvel para o pedido avançar.</p>
       `;
     } else {
