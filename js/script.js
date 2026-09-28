@@ -285,7 +285,18 @@ async function carregarHomeColecoes(){
   }
 }
 
+
+function atualizarLinkConta(){
+  const link=document.querySelector('.acoes-header a[aria-label="Conta"]');
+  if(!link || typeof obterTokenCliente!=='function') return;
+  const autenticado=!!obterTokenCliente();
+  link.href=autenticado ? (location.pathname.includes('/conta/') ? 'painel.html' : 'conta/painel.html') : (location.pathname.includes('/conta/') ? 'login.html' : 'conta/login.html');
+  link.setAttribute('aria-label', autenticado ? 'Perfil' : 'Entrar');
+  link.title=autenticado ? 'Perfil' : 'Entrar';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  atualizarLinkConta();
   atualizarContadorCarrinho();
   iniciarAbasProduto();
   iniciarVariacoes();

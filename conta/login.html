@@ -46,6 +46,7 @@
   <p class="link-secundario">Ainda não tem conta? <a href="cadastro.html">Criar conta</a></p>
 </div>
 <script>
+  if(typeof obterTokenCliente==='function' && obterTokenCliente()){ window.location.replace('painel.html'); }
   document.getElementById('lg-botao').addEventListener('click', async () => {
     const email = document.getElementById('lg-email').value.trim();
     const palavraPasse = document.getElementById('lg-senha').value;
