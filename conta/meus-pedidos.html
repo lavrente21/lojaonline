@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meus pedidos — Lúmina</title>
 <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Meus pedidos — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Meus pedidos — Lúmina">
+  <meta property="og:description" content="Meus pedidos — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Meus pedidos — Lúmina">
+  <meta name="twitter:description" content="Meus pedidos — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
 <div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
@@ -56,6 +66,7 @@
 </div>
 
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -67,7 +78,7 @@
         <li><a href="../loja.html">Todos os produtos</a></li>
         <li><a href="../categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="../categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="../kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -90,8 +101,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -107,32 +119,12 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="../js/api.js"></script>
-<script>
-  if(!obterTokenCliente()){ window.location.href = 'login.html'; }
-  (async () => {
-    try{
-      const pedidos = await apiFetch('/pedidos/meus');
-      const tabela = document.getElementById('mp-tabela');
-      if(pedidos.length === 0){
-        tabela.innerHTML = '<tr><th>Encomenda</th><th>Data</th><th>Estado</th><th>Total</th><th></th></tr><tr><td colspan="5" style="text-align:center;color:#8A7A70">Ainda não fez nenhuma encomenda.</td></tr>';
-        return;
-      }
-      tabela.innerHTML = '<tr><th>Encomenda</th><th>Data</th><th>Estado</th><th>Total</th><th></th></tr>' +
-        pedidos.map(p => `
-          <tr>
-            <td>#${p.numeroPedido}</td>
-            <td>${new Date(p.criadoEm).toLocaleDateString('pt-PT')}</td>
-            <td><span class="badge-status">${estadoPT(p.estado)}</span></td>
-            <td>${Number(p.totalEUR||0).toFixed(2)} €</td>
-            <td><a href="pedido-detalhe.html?numero=${encodeURIComponent(p.numeroPedido)}" style="color:var(--terracota-escuro);font-size:13px">Ver</a></td>
-          </tr>`).join('');
-    }catch(e){
-      document.getElementById('mp-tabela').innerHTML = `<tr><td colspan="5" style="color:#B14B33">Erro ao carregar: ${e.message}</td></tr>`;
-    }
-  })();
-</script>
+<script src="/js/extracted/conta-meus-pedidos-0-03e489270484.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

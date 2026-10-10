@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /conta/
+Disallow: /checkout.html
+Disallow: /confirmacao.html
+Disallow: /admin/

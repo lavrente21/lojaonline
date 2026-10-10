@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meus endereços — Lúmina</title>
 <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Meus endereços — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Meus endereços — Lúmina">
+  <meta property="og:description" content="Meus endereços — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Meus endereços — Lúmina">
+  <meta name="twitter:description" content="Meus endereços — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
 <div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
@@ -69,6 +79,7 @@
 </div>
 
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -80,7 +91,7 @@
         <li><a href="../loja.html">Todos os produtos</a></li>
         <li><a href="../categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="../categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="../kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -103,8 +114,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -120,10 +132,11 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const el=document.getElementById('enderecos-real');try{const rows=await apiFetch('/auth/clientes/enderecos');el.innerHTML=rows.length?rows.map(a=>`<div class="cartao-endereco"><strong>${a.rotulo||'Morada'}</strong>${a.linha1}${a.linha2?'<br>'+a.linha2:''}<br>${a.codigo_postal||''} ${a.cidade}<br>${a.pais}${a.predefinido?' · Predefinida':''}<br><button type="button" onclick="removerEndereco(${a.id})">Remover</button></div>`).join(''):'<p class="estado-vazio">Ainda não existem endereços guardados.</p>';}catch(e){el.innerHTML=`<p class="estado-vazio">${e.message}</p>`;}})();document.getElementById('btn-novo-end').onclick=()=>{document.getElementById('form-endereco').style.display='block'};
-document.getElementById('form-endereco').addEventListener('submit',async e=>{e.preventDefault();const v=id=>document.getElementById(id).value.trim();try{await apiFetch('/auth/clientes/enderecos',{method:'POST',body:JSON.stringify({rotulo:v('en-rotulo'),linha1:v('en-linha1'),linha2:v('en-linha2'),cidade:v('en-cidade'),codigoPostal:v('en-cp'),pais:v('en-pais'),telefone:v('en-tel'),predefinido:document.getElementById('en-pred').checked})});location.reload()}catch(err){document.getElementById('en-msg').textContent=err.message}});
-async function removerEndereco(id){if(!confirm('Remover este endereço?'))return;try{await apiFetch('/auth/clientes/enderecos/'+id,{method:'DELETE'});location.reload()}catch(e){alert(e.message)}}</script>
+<script src="/js/config.js"></script>
+<script src="../js/api.js"></script><script src="/js/extracted/conta-meus-enderecos-0-43c7d23716fe.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

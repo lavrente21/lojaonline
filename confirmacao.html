@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Encomenda confirmada — Lúmina</title>
 <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Encomenda confirmada — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Encomenda confirmada — Lúmina">
+  <meta property="og:description" content="Encomenda confirmada — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Encomenda confirmada — Lúmina">
+  <meta name="twitter:description" content="Encomenda confirmada — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
 <div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
@@ -36,50 +46,22 @@
 
 <div class="caixa-central" style="text-align:center;max-width:520px">
   <div style="font-size:50px;margin-bottom:14px" id="conf-icone"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.6 2.7L16.5 9"></path></svg></div>
-  <h1 id="conf-titulo">Encomenda confirmada!</h1>
+  <h1 id="conf-titulo">Encomenda recebida</h1>
   <p class="aviso" id="conf-mensagem">A carregar os detalhes do seu pedido...</p>
-  <div class="cartao-conta" style="text-align:left" id="conf-caixa-pagamento"></div>
+  <div class="cartao-conta" style="text-align:left">
+    <h2>Consultar pagamento e enviar comprovativo</h2>
+    <form id="conf-consulta-form"><label for="conf-email">E-mail usado na encomenda</label><input id="conf-email" type="email" required maxlength="254" autocomplete="email"><button class="btn btn-primario" type="submit">Ver instruções de pagamento</button></form>
+    <p id="conf-detalhes-erro" role="status"></p>
+    <div id="conf-caixa-pagamento"></div>
+    <form id="conf-upload-form" hidden><label for="conf-comprovativo">Comprovativo (PDF ou imagem até 5 MB)</label><input id="conf-comprovativo" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" required><button class="btn btn-primario" type="submit">Enviar comprovativo</button></form>
+  </div>
   <p class="aviso" id="conf-prazo"></p>
   <a href="loja.html" class="btn btn-primario">Continuar a comprar</a>
 </div>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const numero = params.get('numero');
-  const totalEUR = params.get('totalEUR');
-  const totalMoeda = params.get('totalMoeda') || params.get('totalAOA');
-  const rota = params.get('rota');
-  const moeda = params.get('moeda');
-  const idCobranca = params.get('idCobranca');
-  const metodoPag = params.get('metodo');
-  const mensagemPag = params.get('mensagem');
-
-  if(numero){
-    document.getElementById('conf-mensagem').innerHTML =
-      `Obrigado pela sua compra. O número da sua encomenda é <strong>#${numero}</strong>. Enviámos os detalhes para o seu e-mail.`;
-
-    const caixa = document.getElementById('conf-caixa-pagamento');
-    if(metodoPag === 'manual'){
-      caixa.innerHTML = `<div class="linha-resumo total"><span>Total a pagar</span><span>${Number(totalMoeda||totalEUR||0).toLocaleString('pt-PT')} ${moeda||'EUR'}</span></div><p style="font-size:13px;color:#5B4C43;margin-top:10px">${mensagemPag || 'A nossa equipa vai contactá-lo para confirmar o pagamento.'}<br>O pedido avança para processamento assim que o pagamento for confirmado.</p>`;
-    } else if(moeda === 'AOA'){
-      caixa.innerHTML = `
-        <div class="linha-resumo total"><span>Total a pagar</span><span>${Number(totalMoeda||totalEUR||0).toLocaleString('pt-PT')} ${moeda||'EUR'}</span></div>
-        <p style="font-size:13px;color:#5B4C43;margin-top:10px">Referência Multicaixa Express: <strong>${idCobranca}</strong><br>Confirme o pagamento na app MCX Express no seu telemóvel para o pedido avançar.</p>
-      `;
-    } else {
-      caixa.innerHTML = `<div class="linha-resumo total"><span>Total pago</span><span>${Number(totalEUR).toFixed(2)} €</span></div>`;
-    }
-
-    document.getElementById('conf-prazo').textContent = rota === 'agente_de_carga'
-      ? 'O pedido será encaminhado para o agente de carga configurado e o rastreio será atualizado quando estiver disponível.'
-      : 'O prazo de entrega será atualizado com base na confirmação logística do fornecedor.';
-  } else {
-    document.getElementById('conf-icone').innerHTML = `<svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 8a3 3 0 0 1 6 0"></path></svg>`;
-    document.getElementById('conf-titulo').textContent = 'Nenhum pedido encontrado';
-    document.getElementById('conf-mensagem').textContent = 'Não encontrámos os detalhes de nenhuma compra recente.';
-  }
-</script>
+<script src="/js/extracted/confirmacao-0-21f89289a050.js"></script>
 
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -91,7 +73,7 @@
         <li><a href="loja.html">Todos os produtos</a></li>
         <li><a href="categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -114,8 +96,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -131,8 +114,11 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

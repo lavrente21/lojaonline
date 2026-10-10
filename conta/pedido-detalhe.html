@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Detalhe do pedido — Lúmina</title>
 <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Detalhe do pedido — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Detalhe do pedido — Lúmina">
+  <meta property="og:description" content="Detalhe do pedido — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Detalhe do pedido — Lúmina">
+  <meta name="twitter:description" content="Detalhe do pedido — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
 <div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
@@ -52,6 +62,7 @@
 </div>
 
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -63,7 +74,7 @@
         <li><a href="../loja.html">Todos os produtos</a></li>
         <li><a href="../categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="../categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="../kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -86,8 +97,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -103,8 +115,11 @@
   </div>
 </div>
 
-<script src="../js/api.js"></script><script>if(!obterTokenCliente())location.href='login.html';(async()=>{const n=new URLSearchParams(location.search).get('numero');if(!n)return;try{const p=await apiFetch('/pedidos/meus/'+encodeURIComponent(n));document.getElementById('pd-titulo').textContent='Encomenda #'+p.numeroPedido;document.getElementById('pd-migalha').textContent='Pedido #'+p.numeroPedido;document.getElementById('pd-estado').textContent='Estado: '+estadoPT(p.estado)+(p.pagamento&&p.pagamento.estado==='pendente'?' · Pagamento pendente de confirmação':'');document.getElementById('pd-itens').innerHTML=(p.itens||[]).map(i=>`<div class="linha-resumo"><span>${i.nome_produto||i.nome||'Produto'} ×${i.quantidade||1}</span><span>${Number(i.subtotal_eur||(Number(i.preco_unitario_eur||0)*Number(i.quantidade||1))||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'})}</span></div>`).join('');document.getElementById('pd-portes').textContent=p.totalEUR? 'Incluído no total':'—';document.getElementById('pd-total').textContent=Number(p.totalEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'});}catch(e){document.getElementById('pd-estado').textContent=e.message}})();</script>
+<script src="/js/config.js"></script>
+<script src="../js/api.js"></script><script src="/js/extracted/conta-pedido-detalhe-0-7bd37c5eabdc.js"></script>
 <script src="../js/script.js"></script>
 <script src="../js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

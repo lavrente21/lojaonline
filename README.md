@@ -31,3 +31,8 @@
 
 Se o backend não estiver a correr, as páginas mostram uma mensagem a avisar
 ("Não foi possível ligar ao servidor") em vez de falhar silenciosamente.
+
+
+## Auditoria A/B/C/D — 11/10/2026
+
+Estado parcial, não aprovado para produção. Ver `CHANGELOG-CORRECOES.md`, `PENDENTE-DO-DONO.md` e `RELATORIO-FINAL.md` na raiz do pacote. A configuração de API e domínio é fornecida por variáveis de build; não usar URLs adivinhadas. Os testes PostgreSQL/E2E/carga e integrações reais continuam por executar.

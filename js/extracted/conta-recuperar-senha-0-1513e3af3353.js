@@ -1,0 +1,7 @@
+(()=>{const btn=document.getElementById('rc-botao'),msg=document.getElementById('rc-msg'),token=new URLSearchParams(location.search).get('token');
+const emailField=document.getElementById('rc-campo-email'),senhaField=document.getElementById('rc-campo-senha');
+if(token){emailField.hidden=true;senhaField.hidden=false;btn.textContent='Redefinir palavra-passe';document.getElementById('rc-instrucao').textContent='Crie uma nova palavra-passe com pelo menos 8 caracteres.';}
+btn.addEventListener('click',async()=>{btn.disabled=true;msg.textContent='A processar…';try{
+ if(token){const palavraPasse=document.getElementById('rc-senha').value;if(palavraPasse.length<8)throw new Error('A palavra-passe deve ter pelo menos 8 caracteres.');await apiFetch('/auth/clientes/redefinir-senha',{method:'POST',body:JSON.stringify({token,palavraPasse})});msg.style.color='#2E7D4F';msg.textContent='Palavra-passe alterada. Já pode iniciar sessão.';btn.textContent='Concluído';btn.disabled=true;return;}
+ const email=document.getElementById('rc-email').value.trim();if(!email)throw new Error('Indique o e-mail.');await apiFetch('/auth/clientes/recuperar-senha',{method:'POST',body:JSON.stringify({email})});msg.style.color='#2E7D4F';msg.textContent='Se existir uma conta associada, receberá um e-mail com as instruções.';
+ }catch(e){msg.style.color='#B14B33';msg.textContent=e.message||'Não foi possível concluir o pedido.';btn.disabled=false;} });})();

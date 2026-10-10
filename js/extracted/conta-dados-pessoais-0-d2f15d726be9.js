@@ -1,0 +1,7 @@
+if(!obterTokenCliente())location.href='login.html';
+(async()=>{try{const c=await apiFetch('/auth/clientes/me');document.getElementById('dp-nome').value=c.nome||'';document.getElementById('dp-email').value=c.email||'';document.getElementById('dp-tel').value=c.telefone||''}catch(e){console.error(e)}})();
+document.getElementById('form-dados').addEventListener('submit',async e=>{e.preventDefault();const m=document.getElementById('dp-msg');m.style.color='#5B4C43';m.textContent='A guardar...';
+const corpo={nome:document.getElementById('dp-nome').value.trim(),email:document.getElementById('dp-email').value.trim(),telefone:document.getElementById('dp-tel').value.trim()||null};
+const nova=document.getElementById('dp-nova').value;if(nova){corpo.novaPalavraPasse=nova;corpo.palavraPasseAtual=document.getElementById('dp-atual').value}
+try{await apiFetch('/auth/clientes/me',{method:'PUT',body:JSON.stringify(corpo)});m.style.color='#2E7D4F';m.textContent='Dados guardados.';document.getElementById('dp-atual').value='';document.getElementById('dp-nova').value=''}catch(err){m.style.color='#B14B33';m.textContent=err.message}});
+document.getElementById('dp-exportar').addEventListener('click',async()=>{try{const d=await apiFetch('/auth/clientes/exportar');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download='meus-dados-lumina.json';a.click()}catch(err){alert(err.message)}});

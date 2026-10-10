@@ -1,4 +1,5 @@
 [build]
+  command = "node scripts/write-config.js && node scripts/generate-sitemap.js"
   publish = "."
 
 [[redirects]]
@@ -6,3 +7,16 @@
   to = "/404.html"
   status = 404
   force = false
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/lumina-loja-publica-home-secoes-v2.zip"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

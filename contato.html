@@ -5,9 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contacto — Lúmina</title>
 <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="description" content="Contacto — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Contacto — Lúmina">
+  <meta property="og:description" content="Contacto — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contacto — Lúmina">
+  <meta name="twitter:description" content="Contacto — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
-<div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
+<div class="anuncio-topo">Encomendas internacionais sujeitas a confirmação manual</div>
 
 <header class="principal">
   <div class="header-linha">
@@ -48,10 +57,11 @@
   <p id="contacto-msg" role="status" aria-live="polite"></p>
 </form>
 <h2 style="margin-top:40px">Outros contactos</h2>
-<p>E-mail: apoio@lumina-beauty.com<br>WhatsApp: +351 900 000 000</p>
+<p>E-mail: <a href="mailto:info@aolumina.net">info@aolumina.net</a></p>
 </div>
 
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -63,7 +73,7 @@
         <li><a href="loja.html">Todos os produtos</a></li>
         <li><a href="categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -86,8 +96,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -103,9 +114,12 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="js/api.js"></script>
-<script>document.getElementById("form-contato").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById("contacto-msg"),b=f.querySelector("button");m.textContent="A enviar...";b.disabled=true;try{await apiFetch("/publico/contactos",{method:"POST",body:JSON.stringify({nome:document.getElementById("contacto-nome").value,email:document.getElementById("contacto-email").value,assunto:document.getElementById("contacto-assunto").value,mensagem:document.getElementById("contacto-mensagem").value})});m.textContent="Mensagem enviada. A nossa equipa responderá em menos de 24h úteis.";f.reset()}catch(err){m.textContent=err.message}finally{b.disabled=false}});</script>
+<script src="/js/extracted/contato-0-8f1d045ab33a.js"></script>
 <script src="js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

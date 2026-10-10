@@ -5,9 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rastrear encomenda — Lúmina</title>
 <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Rastrear encomenda — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Rastrear encomenda — Lúmina">
+  <meta property="og:description" content="Rastrear encomenda — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rastrear encomenda — Lúmina">
+  <meta name="twitter:description" content="Rastrear encomenda — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
-<div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
+<div class="anuncio-topo">Encomendas internacionais sujeitas a confirmação manual</div>
 
 <header class="principal">
   <div class="header-linha">
@@ -36,44 +46,18 @@
 
 <div class="caixa-central">
   <h1>Rastrear encomenda</h1>
-  <p class="aviso">Introduza o número da encomenda para ver o estado atual.</p>
+  <p class="aviso">Introduza o número da encomenda e o e-mail usado na compra para ver o estado atual.</p>
   <div class="formulario">
-    <div class="campo-formulario"><label>Número da encomenda</label><input type="text" id="rt-numero" placeholder="Ex: LUM-48213"></div>
+    <div class="campo-formulario"><label>Número da encomenda</label><input type="text" id="rt-numero" placeholder="Ex: LUM-48213" autocomplete="off"></div>
+    <div class="campo-formulario"><label>E-mail da encomenda</label><input type="email" id="rt-email" required autocomplete="email"></div>
     <button class="btn btn-primario" style="width:100%" id="rt-botao">Rastrear</button>
   </div>
   <div id="rt-resultado" style="margin-top:22px"></div>
 </div>
-<script>
-  const NOMES_ESTADO = {
-    novo: 'Aguarda pagamento', processando: 'Em processamento',
-    enviado_ao_agente: 'Enviado ao agente de carga', a_caminho: 'A caminho',
-    a_caminho_destino_final: 'A caminho do destino final', entregue: 'Entregue'
-  };
-  document.getElementById('rt-botao').addEventListener('click', async () => {
-    const numero = document.getElementById('rt-numero').value.trim();
-    const resultadoEl = document.getElementById('rt-resultado');
-    if(!numero){ return; }
-    resultadoEl.innerHTML = '<p style="font-size:14px;color:#8A7A70">A procurar...</p>';
-    try{
-      const pedido = await apiFetch('/pedidos/rastrear/' + encodeURIComponent(numero));
-      let linhasFornecedor = Object.entries(pedido.fornecedores || {}).map(([forn, dados]) => `
-        <div class="linha-resumo"><span>Fornecedor (${forn})</span><span>${dados.idPedidoFornecedor}</span></div>
-        ${dados.rastreio1 ? `<div class="linha-resumo"><span>Rastreio (fornecedor → agente)</span><span>${dados.rastreio1}</span></div>` : ''}
-        ${dados.rastreio2 ? `<div class="linha-resumo"><span>Rastreio (agente → destino)</span><span>${dados.rastreio2}</span></div>` : ''}
-      `).join('');
-      resultadoEl.innerHTML = `
-        <div class="cartao-conta" style="text-align:left">
-          <h2>Encomenda #${pedido.numeroPedido}</h2>
-          <p style="margin-bottom:14px"><span class="badge-status enviado">${NOMES_ESTADO[pedido.estado] || pedido.estado}</span></p>
-          ${linhasFornecedor || '<p style="font-size:13.5px;color:#8A7A70">Ainda sem informação de fornecedor (aguarda confirmação de pagamento).</p>'}
-        </div>`;
-    }catch(e){
-      resultadoEl.innerHTML = `<p style="color:#B14B33;font-size:14px">Não foi possível encontrar essa encomenda: ${e.message}</p>`;
-    }
-  });
-</script>
+<script src="/js/extracted/rastrear-pedido-0-f68619c4453d.js"></script>
 
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -85,7 +69,7 @@
         <li><a href="loja.html">Todos os produtos</a></li>
         <li><a href="categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -108,8 +92,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -125,8 +110,11 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

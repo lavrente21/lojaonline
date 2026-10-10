@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kits e combos — Lúmina</title>
 <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="description" content="Kits e combos — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Kits e combos — Lúmina">
+  <meta property="og:description" content="Kits e combos — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Kits e combos — Lúmina">
+  <meta name="twitter:description" content="Kits e combos — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
 <div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
@@ -40,8 +49,9 @@
 </div>
 <div class="grade-produtos" id="selecoes-reais" style="max-width:var(--max);margin:30px auto;padding:0 32px 90px"></div>
 
-<script>document.addEventListener('DOMContentLoaded',async()=>{try{const ps=await apiFetch('/produtos');const el=document.getElementById('selecoes-reais');if(!el)return;el.innerHTML=ps.slice(0,6).map(p=>`<a href="produto.html?id=${p.id}" class="cartao-produto"><div class="imagem-produto">${p.imagem_principal?`<img src="${p.imagem_principal}" alt="" loading="lazy">`:''}</div><div class="info-produto"><div class="categoria-produto">${p.categoria||''}</div><h3>${p.nome}</h3><div class="preco">${(window.LUMINA?window.LUMINA.money(Number(p.precoVendaEUR||0)):Number(p.precoVendaEUR||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'}))}</div></div></a>`).join('')||'<p>Ainda não há produtos publicados.</p>';}catch(e){}});</script>
+<script src="/js/extracted/kits-0-7b725d439511.js"></script>
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -53,7 +63,7 @@
         <li><a href="loja.html">Todos os produtos</a></li>
         <li><a href="categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -76,8 +86,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -93,8 +104,11 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

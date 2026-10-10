@@ -1,8 +1,10 @@
-# Lúmina — Frontend Netlify
+# Deploy Netlify — loja Lúmina
 
-1. Publique esta pasta no Netlify.
-2. O site é estático e não usa Vite nem build step. Não é necessário configurar `VITE_API_URL`.
-3. A API de produção está definida em `js/api.js` como `https://lojaonline-backend.onrender.com/api`.
-4. Se precisar de outro backend, defina `window.LUMINA_API_BASE_URL` antes de carregar `js/api.js`.
-5. O frontend não contém segredos de Stripe, CJ, BuckyDrop, AppyPay ou Supabase.
-6. Os produtos públicos, formulários e áreas da conta usam dados reais da API do Render.
+O backend deve ser publicado e validado primeiro. Não inventar URLs.
+
+Variáveis de build obrigatórias:
+- `LUMINA_API_BASE_URL`: URL HTTPS real do serviço de API, sem adivinhar host.
+- `SITE_URL`: URL HTTPS canónica real da loja (necessária na loja para gerar sitemap).
+- `LUMINA_LEGAL_VALIDADO`: `true` apenas após validação jurídica e contabilística do titular; caso contrário manter `false`.
+
+O build gera `js/config.js`. Se a URL da API estiver vazia, a loja mostra aviso e as chamadas não são feitas. Loja: `node scripts/write-config.js && node scripts/generate-sitemap.js`. Admin: `node scripts/write-config.js`. Configure os valores no painel Netlify; nunca comite credenciais ou URLs provisórias.

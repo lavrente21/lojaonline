@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog — Lúmina</title>
 <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="description" content="Blog — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:title" content="Blog — Lúmina">
+  <meta property="og:description" content="Blog — Lúmina. Consulte informações e condições da loja online Lúmina.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog — Lúmina">
+  <meta name="twitter:description" content="Blog — Lúmina. Consulte informações e condições da loja online Lúmina.">
 </head>
 <body>
 <div class="anuncio-topo">Envio calculado por destino · Europa, América e Angola</div>
@@ -38,31 +47,9 @@
 <h1>Blog Lúmina</h1>
 <p style="max-width:520px;margin:0 auto">Dicas de rotina, ingredientes explicados e novidades do mundo da beleza.</p>
 </div>
-<div class="grade-blog"><a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Skincare</div><h3>Como montar a rotina de skincare perfeita</h3><p>Passo a passo simples para organizar limpeza, tratamento e proteção.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Ingredientes</div><h3>Vitamina C vs Retinol: qual escolher?</h3><p>Entenda as diferenças e como combinar estes dois ativos sem irritar a pele.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Maquilhagem</div><h3>Como escolher o tom certo de base</h3><p>Dicas práticas para testar e acertar no tom à primeira compra.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Hair care</div><h3>Frizz: porque acontece e como controlar</h3><p>As causas mais comuns do frizz e os produtos que realmente ajudam.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Body care</div><h3>Rotina de corpo para os dias frios</h3><p>Como manter a pele do corpo hidratada durante o inverno.</p></div>
-</a>
-<a href="artigo.html" class="cartao-blog">
-  <div class="capa-blog"></div>
-  <div class="corpo-blog"><div class="categoria-blog">Sustentabilidade</div><h3>O que significa realmente 'cruelty-free'</h3><p>Explicamos o que este selo garante e como identificá-lo.</p></div>
-</a></div>
+<div class="grade-blog" id="blog-artigos" aria-live="polite"><p>A carregar artigos publicados…</p></div>
 <footer class="rodape">
+  <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>
   <div class="grade-rodape">
     <div>
       <div class="logo" style="margin-bottom:14px">Lúmina</div>
@@ -74,7 +61,7 @@
         <li><a href="loja.html">Todos os produtos</a></li>
         <li><a href="categoria.html?cat=skincare">Skincare</a></li>
         <li><a href="categoria.html?cat=maquilhagem">Maquilhagem</a></li>
-        <li><a href="kits.html">Kits</a></li>
+        <li></li>
       </ul>
     </div>
     <div>
@@ -97,8 +84,9 @@
   </div>
   <div class="rodape-base">
     <span>© 2026 Lúmina. Todos os direitos reservados.</span>
-    <span>Métodos de pagamento disponíveis no checkout</span>
+    <span>Encomendas sujeitas a confirmação manual</span>
   </div>
+<div class="lumina-cookie-preferences-wrap"><button type="button" data-cookie-preferences>Preferências de cookies</button></div>
 </footer>
 
 <div class="overlay-carrinho"></div>
@@ -114,8 +102,12 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="js/api.js"></script>
+<script src="/js/blog-dinamico.js" defer></script>
 <script src="js/script.js"></script>
 <script src="/js/i18n.js" defer></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script src="/js/empresa-publica.js" defer></script>
 </body>
 </html>

@@ -19,7 +19,7 @@ function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados =
   const itens = lerCarrinho();
   const existente = itens.find(i => i.produtoId === produtoId);
   if(existente && (existente.idVariante || null) === (metadados.varianteId || null)){ existente.quantidade += quantidade; }
-  else{ itens.push({ produtoId, nome, preco, quantidade, imagem: metadados.imagem || null, idVariante: metadados.varianteId || null, idFornecedorVariante: metadados.idFornecedorVariante || null, skuVariante: metadados.skuVariante || null }); }
+  else{ itens.push({ produtoId, nome, preco, quantidade, imagem: metadados.imagem || null, idVariante: metadados.varianteId || null }); }
   guardarCarrinho(itens);
   mostrarToast(`${nome} adicionado ao carrinho`);
   renderizarDrawerCarrinho();
@@ -27,16 +27,17 @@ function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados =
 
 // ---------- Carregar produtos reais da API (loja.html e index.html) ----------
 function escHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function safeImageUrl(v){const s=String(v||'').trim();if(!s)return '';if(/^https:\/\//i.test(s)||/^\/(?!\/)/.test(s)||/^(\.\.\/|\.\/)/.test(s))return s;return '';}
 function cardProduto(p){
   const preco=Number(p.precoAtualEUR??p.precoVendaEUR??0);
   const venda=Number(p.precoVendaEUR??0);
   const promo=p.promocaoAtiva&&Number(p.promocaoPrecoEUR)>0&&Number(p.promocaoPrecoEUR)<venda;
   const tags=String(p.etiqueta||'').split(/\s+/).filter(Boolean).slice(0,2);
   const badges=[p.destaque?'<span class="selo-produto">Destaque</span>':'',...tags.map(t=>`<span class="selo-produto selo-tag">${escHtml(t)}</span>`),promo?'<span class="selo-produto selo-promocao">Promoção</span>':''].filter(Boolean).join('');
-  const indisponivel=Number(p.stock||0)<=0;
+  const indisponivel=Number(p.stockDisponivel??p.stock??0)<=0;
   return `<article class="cartao-produto${indisponivel?' produto-indisponivel':''}">
     <a href="produto.html?id=${encodeURIComponent(p.id)}" class="cartao-produto-link">
-      <div class="imagem-produto">${badges}${p.imagemPrincipal?`<img src="${escHtml(p.imagemPrincipal)}" alt="${escHtml(p.imagemAlt||p.nome)}" loading="lazy">`:''}</div>
+      <div class="imagem-produto">${badges}${safeImageUrl(p.imagemPrincipal)?`<img src="${escHtml(safeImageUrl(p.imagemPrincipal))}" alt="${escHtml(p.imagemAlt||p.nome)}" loading="lazy">`:''}</div>
       <div class="info-produto"><div class="categoria-produto">${escHtml(p.categoria||'')}</div><h3>${escHtml(p.nome)}</h3>
       <div class="preco-produto-adminfront">${promo?`<del class="preco-anterior" data-lumina-eur="${venda}">${window.LUMINA?window.LUMINA.money(venda):venda.toFixed(2)+' €'}</del>`:''}<div class="preco" data-lumina-eur="${preco}">${window.LUMINA?window.LUMINA.money(preco):preco.toFixed(2)+' €'}</div></div>
       ${indisponivel?'<small class="produto-stock-indisponivel">Indisponível</small>':''}</div>
@@ -63,7 +64,7 @@ async function carregarProdutosNaGrade(seletorContainer, opcoes={}){
 }
 function obterFiltrosLoja(){
   const params=new URLSearchParams(location.search);
-  const categoriaPagina=params.get('cat')||'';
+  const categoriaRaw=params.get('cat')||''; const categoriaPagina=({'hair':'Hair care','body':'Body care','skincare':'Skincare','maquilhagem':'Maquilhagem'}[categoriaRaw.toLowerCase()]||categoriaRaw);
   const categorias=[...document.querySelectorAll('[data-filtro-categoria]:checked')].map(x=>x.dataset.filtroCategoria);
   const pele=[...document.querySelectorAll('[data-filtro-pele]:checked')].map(x=>x.dataset.filtroPele);
   const cabelo=[...document.querySelectorAll('[data-filtro-cabelo]:checked')].map(x=>x.dataset.filtroCabelo);
@@ -99,9 +100,9 @@ function renderizarDrawerCarrinho(){
   if(rodape) rodape.style.display = 'block';
   container.innerHTML = itens.map(item => `
     <div class="item-drawer">
-      <div class="miniatura-item">${item.imagem ? `<img src="${item.imagem}" alt="" loading="lazy">` : ''}</div>
+      <div class="miniatura-item">${safeImageUrl(item.imagem) ? `<img src="${escHtml(safeImageUrl(item.imagem))}" alt="" loading="lazy">` : ''}</div>
       <div style="flex:1">
-        <div style="font-size:14px;margin-bottom:4px">${item.nome}</div>
+        <div style="font-size:14px;margin-bottom:4px">${escHtml(item.nome)}</div>
         <div style="font-size:13px;color:#8A7A70">Qtd: ${item.quantidade} · €${(item.preco * item.quantidade).toFixed(2)}</div>
       </div>
     </div>
@@ -180,12 +181,13 @@ function iniciarQuantidade(){
 // ---------- Newsletter ----------
 function iniciarNewsletter(){
   document.querySelectorAll('.form-newsletter').forEach(form => {
+    if(!form.querySelector('[name=consentimento]')){const label=document.createElement('label');label.className='consentimento-newsletter';const check=document.createElement('input');check.type='checkbox';check.name='consentimento';check.required=true;label.append(check,document.createTextNode(' Aceito receber a newsletter e consultei a política de privacidade.'));form.insertBefore(label,form.querySelector('button'));}
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const input=form.querySelector('input[type="email"]'), msg=form.querySelector('.newsletter-msg') || (()=>{const x=document.createElement('p');x.className='newsletter-msg';form.appendChild(x);return x})();
-      const btn=form.querySelector('button'); if(!input)return;
+      const btn=form.querySelector('button'), consent=form.querySelector('[name=consentimento]'); if(!input)return;if(!consent||!consent.checked){msg.textContent='Assinale o consentimento para subscrever.';return;}
       msg.textContent='A enviar...'; if(btn)btn.disabled=true;
-      try{await apiFetch('/publico/newsletter',{method:'POST',body:JSON.stringify({email:input.value})});msg.textContent='Subscrição confirmada.';form.reset();}
+      try{await apiFetch('/publico/newsletter',{method:'POST',body:JSON.stringify({email:input.value,consentimento:true})});msg.textContent='Pedido recebido. Consulte o seu e-mail para confirmar a subscrição.';form.reset();}
       catch(err){msg.textContent=err.message;} finally{if(btn)btn.disabled=false;}
     });
   });
@@ -203,7 +205,7 @@ async function carregarHeroReal(){
     hero.href=`produto.html?id=${encodeURIComponent(p.id)}`;
     nome.textContent=p.nome || 'Produto de beleza';
     if(p.imagem_principal){
-      media.innerHTML=`<img src="${p.imagem_principal}" alt="${p.nome || 'Produto Lúmina'}" loading="eager">`;
+      media.innerHTML=`<img src="${escHtml(safeImageUrl(p.imagem_principal))}" alt="${escHtml(p.nome || 'Produto Lúmina')}" loading="eager">`;
     }
   }catch(e){
     // Mantém o hero institucional quando o catálogo ainda não está disponível.
@@ -322,7 +324,7 @@ function renderizarPaginaCarrinho(){
       <div class="linha-item-carrinho">
         <div class="miniatura-linha"></div>
         <div>
-          <div style="font-size:15px;margin-bottom:4px">${item.nome}</div>
+          <div style="font-size:15px;margin-bottom:4px">${escHtml(item.nome)}</div>
           <div class="remover-item" onclick="removerDoCarrinho(${i})" style="cursor:pointer">Remover</div>
         </div>
         <div style="font-size:14px">Qtd: ${item.quantidade}</div>
