@@ -1092,3 +1092,104 @@ section{padding-left:var(--gutter);padding-right:var(--gutter);}
   .secao-destaques-home .imagem-produto{border-radius:9px;}
   .home-ver-mais-wrap{padding-top:7px;}
 }
+
+/* Lúmina — revisão de apresentação 11/10/2026. Não altera ações. */
+:root {
+  --superficie: oklch(1 0 0);
+  --fundo-suave: oklch(.98 .004 75);
+  --texto-secundario: oklch(.45 .025 55);
+  --foco: oklch(.52 .11 42);
+  --borda-forte: oklch(.77 .025 60);
+  --sombra-interface: 0 6px 22px oklch(.25 .015 55 / .07);
+  --sombra-foco: 0 0 0 3px oklch(.52 .11 42 / .14);
+  --raio-interface: 8px;
+}
+body { background: var(--superficie); }
+:where(a, button, input, select, textarea):focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }
+:where(input, select, textarea) { accent-color: var(--foco); }
+:where(button, .btn):disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.btn { border-radius: var(--raio-interface); letter-spacing: 0; }
+header.principal { background: var(--superficie); }
+.logo, h1, h2, .eyebrow, .hero-kicker { letter-spacing: 0; }
+.acao-icone, .botao-carrinho, .fechar-carrinho { min-width: 44px; min-height: 44px; }
+.busca-form { border-radius: var(--raio-interface); background: var(--fundo-suave); }
+.busca-form:focus-within { box-shadow: var(--sombra-foco); }
+.item-menu:focus-within .mega-menu { display: flex; }
+.mega-menu { border-radius: var(--raio-interface); }
+.layout-loja { gap: 32px; }
+.filtros { padding-right: 24px; }
+.grupo-filtro h4 { font-family: var(--font-corpo); font-weight: 600; }
+.grupo-filtro label { color: var(--texto-secundario); min-height: 32px; margin-bottom: 2px; }
+.grupo-filtro input { width: 17px; height: 17px; flex-shrink: 0; }
+.barra-loja { padding-bottom: 16px; border-bottom: 1px solid var(--linha); }
+.barra-loja select { min-height: 44px; background: var(--superficie); color: var(--marrom); }
+.cartao-produto { display: flex; flex-direction: column; border-radius: var(--raio-interface); box-shadow: none; }
+.cartao-produto-link { height: auto; flex: 1; display: flex; flex-direction: column; }
+.imagem-produto { flex: 0 0 auto; width: 100%; background: var(--fundo-suave); }
+.cartao-produto .imagem-produto img { object-fit: contain; }
+.info-produto { flex: 1; }
+.info-produto h3 { overflow-wrap: anywhere; }
+.info-produto .categoria-produto, .preco-anterior { color: var(--texto-secundario); letter-spacing: 0; }
+.cartao-produto > .botao-add-rapido { width: calc(100% - 28px); margin: 0 14px 14px; min-height: 44px; border-radius: var(--raio-interface); line-height: 1.35; }
+.cartao-produto:hover { transform: translateY(-2px); box-shadow: var(--sombra-interface); }
+.selo-produto { color: var(--texto-secundario); }
+.cartao-categoria, .cartao-conta, .cartao-endereco, .cartao-blog, .resumo-checkout { border-radius: var(--raio-interface); }
+.resumo-checkout { background: var(--fundo-suave); }
+.linha-resumo { gap: 16px; }
+.linha-resumo > :last-child { text-align: right; }
+.campo-formulario label { font-weight: 500; color: var(--texto-secundario); }
+.campo-formulario input, .campo-formulario select, .campo-formulario textarea { background: var(--superficie); min-height: 46px; }
+.campo-formulario input:focus, .campo-formulario select:focus, .campo-formulario textarea:focus { border-color: var(--foco); }
+.campo-cupom input { min-width: 0; }
+.seletor-quantidade button { min-width: 40px; min-height: 44px; }
+.seletor-quantidade { flex-shrink: 0; }
+.botoes-aba { gap: 18px; }
+.botao-aba { min-height: 44px; }
+.menu-conta a { min-height: 44px; }
+.cartao-conta { overflow-x: auto; }
+.tabela-simples { min-width: 0; }
+.tabela-simples th { background: var(--fundo-suave); color: var(--texto-secundario); }
+.drawer-carrinho { box-shadow: var(--sombra-interface); }
+.toast { border-radius: var(--raio-interface); }
+.catalogo-vazio, .estado-vazio { color: var(--texto-secundario); }
+footer.rodape { background: var(--fundo-suave); }
+.seta-secao-home { width: 44px; height: 44px; }
+@media (min-width: 901px) and (max-width: 1180px) {
+  .header-linha { flex-wrap: wrap; }
+  nav.menu-principal { order: 3; flex-basis: 100%; }
+}
+@media (max-width: 900px) {
+  .header-linha { display: grid; grid-template-columns: minmax(0,1fr) auto auto auto; gap: 8px; padding: 12px 0 0; }
+  .header-linha > .logo { grid-row: 1; grid-column: 1; }
+  .acoes-header { display: contents; }
+  .lumina-localizacao { grid-row: 1; grid-column: 2; margin: 0; gap: 4px; }
+  .lumina-localizacao select { min-height: 36px; max-width: 65px; padding: 4px; }
+  .acoes-header > .acao-icone { grid-row: 1; grid-column: 3; }
+  .botao-carrinho { grid-row: 1; grid-column: 4; }
+  .busca-form { grid-row: 2; grid-column: 1 / -1; display: flex; width: 100%; height: 44px; padding: 8px 12px; overflow: visible; }
+  .busca-form input { display: block; width: 100%; flex: 1; font-size: 16px; }
+  nav.menu-principal { grid-row: 3; grid-column: 1 / -1; display: flex; justify-content: flex-start; width: 100%; overflow-x: auto; scrollbar-width: thin; }
+  nav.menu-principal > ul { gap: 22px; flex-shrink: 0; }
+  nav.menu-principal a.link-menu { white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
+  .mega-menu, .item-menu:hover .mega-menu, .item-menu:focus-within .mega-menu { display: none; }
+  .filtros { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+  .grupo-filtro { margin-bottom: 0; }
+  .grupo-filtro label { min-height: 36px; }
+  .botoes-aba { position: static; }
+  .campo-formulario input, .campo-formulario select, .campo-formulario textarea { font-size: 16px; }
+}
+@media (max-width: 640px) {
+  .header-linha { gap: 4px; }
+  .grade-produtos, .grade-produtos.loja { gap: 12px; }
+  .cartao-produto > .botao-add-rapido { width: calc(100% - 16px); margin: 0 8px 10px; padding: 8px 4px; font-size: 12px; }
+  .info-produto h3 { font-size: 14px; line-height: 1.45; }
+  .info-produto .preco { font-size: 15px; }
+  .filtros { gap: 16px 10px; }
+  .linha-compra .btn { padding-left: 10px; padding-right: 10px; }
+  .tabela-simples { width: max-content; min-width: 100%; }
+  .secao-relacionados .grade-produtos { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .indicador-etapas { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
