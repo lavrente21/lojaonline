@@ -58,10 +58,32 @@
 <li><a href="solicitar-devolucao.html" class="">Devoluções</a></li>
 <li><a href="dados-pessoais.html" class="">Dados pessoais</a></li><li style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px"><a href="login.html" onclick="limparTokenCliente()">Sair</a></li></ul>
   <div>
-  <div class="cartao-conta">
-    <h2 id="pd-titulo">Encomenda</h2><p id="pd-estado" style="font-size:13.5px;color:#8A7A70;margin-bottom:16px"></p><div id="pd-itens"></div><div class="linha-resumo"><span>Portes</span><span id="pd-portes">—</span></div><div class="linha-resumo total"><span>Total</span><span id="pd-total">—</span></div>
+    <nav class="voltar-pedidos"><a href="meus-pedidos.html">← Meus pedidos</a></nav>
+    <div class="cartao-conta">
+      <h2 id="pd-titulo">Encomenda</h2>
+      <p id="pd-data" class="pequeno"></p>
+      <p id="pd-erro" role="alert" class="msg-painel erro"></p>
+      <div id="pd-painel" aria-live="polite"></div>
+    </div>
+    <div class="cartao-conta" id="pd-cartao-itens" hidden>
+      <h2>Artigos</h2>
+      <div id="pd-itens"></div>
+      <div class="linha-resumo"><span>Subtotal</span><span id="pd-subtotal">—</span></div>
+      <div class="linha-resumo" id="pd-desconto-linha" hidden><span>Desconto <small id="pd-cupao"></small></span><span id="pd-desconto">—</span></div>
+      <div class="linha-resumo"><span>Portes</span><span id="pd-portes">—</span></div>
+      <div class="linha-resumo total"><span>Total</span><span id="pd-total">—</span></div>
+      <p id="pd-valor-moeda" class="pequeno" hidden></p>
+    </div>
+    <div class="cartao-conta" id="pd-cartao-morada" hidden>
+      <h2>Morada de entrega</h2>
+      <address id="pd-morada" class="morada-pedido"></address>
+    </div>
+    <div class="cartao-conta" id="pd-cartao-envio" hidden>
+      <h2>Envio e rastreio</h2>
+      <div id="pd-envios"></div>
+      <p class="pequeno"><a href="../rastrear-pedido.html" style="text-decoration:underline">Rastrear encomenda</a></p>
+    </div>
   </div>
-</div>
 </div>
 
 <footer class="rodape">
@@ -121,6 +143,7 @@
 <script src="/js/config.js"></script>
 <script src="../js/api.js"></script><script src="/js/extracted/conta-pedido-detalhe-0-7bd37c5eabdc.js"></script>
 <script src="../js/script.js"></script>
+<script src="../js/pedido-pagamento.js"></script>
 <script src="../js/i18n.js" defer></script>
   <script src="/js/cookie-consent.js" defer></script>
   <script src="/js/empresa-publica.js" defer></script>

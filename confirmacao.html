@@ -47,21 +47,28 @@
   </div>
 </header>
 
-<div class="caixa-central" style="text-align:center;max-width:520px">
-  <div style="font-size:50px;margin-bottom:14px" id="conf-icone"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.6 2.7L16.5 9"></path></svg></div>
-  <h1 id="conf-titulo">Encomenda recebida</h1>
-  <p class="aviso" id="conf-mensagem">A carregar os detalhes do seu pedido...</p>
-  <div class="cartao-conta" style="text-align:left">
-    <h2>Consultar pagamento e enviar comprovativo</h2>
-    <form id="conf-consulta-form"><label for="conf-email">E-mail usado na encomenda</label><input id="conf-email" type="email" required maxlength="254" autocomplete="email"><button class="btn btn-primario" type="submit">Ver instruções de pagamento</button></form>
-    <p id="conf-detalhes-erro" role="status"></p>
-    <div id="conf-caixa-pagamento"></div>
-    <form id="conf-upload-form" hidden><label for="conf-comprovativo">Comprovativo (PDF ou imagem até 5 MB)</label><input id="conf-comprovativo" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" required><button class="btn btn-primario" type="submit">Enviar comprovativo</button></form>
+<div class="caixa-central confirmacao-pedido">
+  <div style="font-size:50px;margin-bottom:14px;text-align:center" id="conf-icone"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.6 2.7L16.5 9"></path></svg></div>
+  <h1 id="conf-titulo" style="text-align:center">Encomenda recebida</h1>
+  <p class="aviso" id="conf-mensagem" style="text-align:center">A carregar os detalhes do seu pedido...</p>
+  <div class="cartao-conta" id="conf-cartao" hidden>
+    <div id="conf-painel" aria-live="polite"></div>
+    <form id="conf-consulta-form" hidden>
+      <p class="pequeno" style="margin-bottom:10px">Para proteger os seus dados, introduza o e-mail usado na encomenda para ver o estado e as instruções de pagamento.</p>
+      <label for="conf-email">E-mail usado na encomenda</label>
+      <input id="conf-email" type="email" required maxlength="254" autocomplete="email">
+      <button class="btn btn-primario" type="submit" style="margin-top:10px">Ver a minha encomenda</button>
+    </form>
+    <p id="conf-detalhes-erro" role="alert" class="msg-painel erro"></p>
   </div>
-  <p class="aviso" id="conf-prazo"></p>
-  <a href="loja.html" class="btn btn-primario">Continuar a comprar</a>
+  <p class="aviso" id="conf-prazo" style="text-align:center"></p>
+  <div class="acoes-confirmacao">
+    <a href="conta/meus-pedidos.html" class="btn btn-secundario" id="conf-link-conta" hidden>Ver os meus pedidos</a>
+    <a href="loja.html" class="btn btn-primario">Continuar a comprar</a>
+  </div>
 </div>
-<script src="/js/extracted/confirmacao-0-21f89289a050.js"></script>
+<script src="/js/pedido-pagamento.js" defer></script>
+<script src="/js/extracted/confirmacao-0-21f89289a050.js" defer></script>
 
 <footer class="rodape">
   <section class="dados-empresa-publica" data-empresa-publica hidden aria-label="Dados legais da empresa"><p><strong data-empresa="denominacao" hidden></strong></p><p>NIF: <span data-empresa="nif" hidden></span></p><p>Morada: <span data-empresa="morada" hidden></span></p><p>Contacto: <span data-empresa="email" hidden></span> <span data-empresa="telefone" hidden></span></p><p>Representante: <span data-empresa="representante" hidden></span></p><p>Horário: <span data-empresa="horario" hidden></span></p><p>Livro de reclamações: <span data-empresa="livroReclamacoes" hidden></span></p><p>IVA: <span data-empresa="iva" hidden></span></p></section>

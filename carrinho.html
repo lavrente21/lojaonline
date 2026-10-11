@@ -50,18 +50,22 @@
 <div class="layout-carrinho">
   <div>
     <h1 style="font-size:26px;margin-bottom:20px">O seu carrinho</h1>
+    <div id="carrinho-avisos" class="avisos-carrinho" role="status" aria-live="polite" hidden></div>
     <div class="itens-pagina-carrinho"></div>
     <div class="campo-cupom">
-      <input type="text" placeholder="Código de cupom">
-      <button class="btn btn-secundario">Aplicar</button>
+      <input type="text" id="cp-cupao" maxlength="40" placeholder="Código de cupom" autocomplete="off">
+      <button type="button" id="cp-aplicar-cupao" class="btn btn-secundario">Aplicar</button>
     </div>
+    <p id="cp-cupao-msg" class="msg-cupao" role="status" aria-live="polite"></p>
   </div>
   <div class="resumo-checkout">
     <h2 style="font-size:18px;margin-bottom:16px">Resumo</h2>
     <div class="linha-resumo"><span>Subtotal</span><span class="valor-subtotal-pagina">€0.00</span></div>
+    <div class="linha-resumo" id="cp-desconto-linha" hidden><span>Desconto</span><span id="cp-desconto">—</span></div>
     <div class="linha-resumo"><span>Portes</span><span>Calculados no checkout</span></div>
     <div class="linha-resumo total"><span>Total</span><span class="valor-total-pagina">€0.00</span></div>
-    <a href="checkout.html" class="btn btn-primario" style="width:100%;text-align:center;display:block;margin-top:16px">Finalizar compra</a>
+    <a href="checkout.html" id="cp-finalizar" class="btn btn-primario" style="width:100%;text-align:center;display:block;margin-top:16px">Finalizar compra</a>
+    <a href="loja.html" class="continuar-compra-link">Continuar a comprar</a>
   </div>
 </div>
 

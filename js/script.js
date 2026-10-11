@@ -1,28 +1,247 @@
 // ---------- Carrinho (armazenado no navegador) ----------
+const CARRINHO_CHAVE = 'lumina_carrinho';
+const CUPAO_CHAVE = 'lumina_cupao';
+const CARRINHO_MAX_QTD = 99;
+function tr(texto){ try{ return (window.LUMINA && window.LUMINA.t) ? window.LUMINA.t(texto) : texto; }catch(e){ return texto; } }
+function moedaCarrinho(eur){ return window.LUMINA ? window.LUMINA.money(eur) : '€' + Number(eur || 0).toFixed(2); }
 function lerCarrinho(){
-  try{ return JSON.parse(localStorage.getItem('lumina_carrinho')) || []; }
-  catch(e){ return []; }
+  try{
+    const dados = JSON.parse(localStorage.getItem(CARRINHO_CHAVE));
+    if(!Array.isArray(dados)) return [];
+    return dados
+      .filter(i => i && i.produtoId != null && Number.isFinite(Number(i.preco)) && Number(i.quantidade) > 0)
+      .map(i => ({ ...i, preco: Number(i.preco), quantidade: Math.min(CARRINHO_MAX_QTD, Math.floor(Number(i.quantidade))) }));
+  }catch(e){ return []; }
 }
 function guardarCarrinho(itens){
-  localStorage.setItem('lumina_carrinho', JSON.stringify(itens));
+  try{ localStorage.setItem(CARRINHO_CHAVE, JSON.stringify(itens)); }catch(e){}
   atualizarContadorCarrinho();
 }
 function atualizarContadorCarrinho(){
-  const itens = lerCarrinho();
-  const total = itens.reduce((soma, item) => soma + item.quantidade, 0);
+  const total = lerCarrinho().reduce((soma, item) => soma + item.quantidade, 0);
   document.querySelectorAll('.contador-carrinho').forEach(el => {
     el.textContent = total;
     el.style.display = total > 0 ? 'flex' : 'none';
   });
 }
+function chaveItemCarrinho(i){ return String(i.produtoId) + ':' + String(i.idVariante || 0); }
+function limiteStockItem(i){
+  const s = (i.stock === null || i.stock === undefined) ? NaN : Number(i.stock);
+  return Number.isFinite(s) && s >= 0 ? Math.min(s, CARRINHO_MAX_QTD) : CARRINHO_MAX_QTD;
+}
+function subtotalCarrinho(itens = lerCarrinho()){ return itens.reduce((s, i) => s + i.preco * i.quantidade, 0); }
+function textoStockLimite(n){ return tr('Só existem {n} unidades disponíveis deste produto.').replace('{n}', n); }
+
 function adicionarAoCarrinho(produtoId, nome, preco, quantidade = 1, metadados = {}){
+  const qtd = Math.max(1, Math.floor(Number(quantidade)) || 1);
   const itens = lerCarrinho();
-  const existente = itens.find(i => i.produtoId === produtoId);
-  if(existente && (existente.idVariante || null) === (metadados.varianteId || null)){ existente.quantidade += quantidade; }
-  else{ itens.push({ produtoId, nome, preco, quantidade, imagem: metadados.imagem || null, idVariante: metadados.varianteId || null }); }
+  const idVar = metadados.varianteId || null;
+  const stock = (metadados.stock !== undefined && metadados.stock !== null && Number.isFinite(Number(metadados.stock))) ? Number(metadados.stock) : null;
+  let item = itens.find(i => String(i.produtoId) === String(produtoId) && String(i.idVariante || 0) === String(idVar || 0));
+  if(item){
+    if(stock !== null) item.stock = stock;
+    item.preco = Number(preco);
+    if(!item.imagem && metadados.imagem) item.imagem = metadados.imagem;
+    if(!item.varianteNome && metadados.varianteNome) item.varianteNome = metadados.varianteNome;
+  }else{
+    item = { produtoId, nome, preco: Number(preco), quantidade: 0, imagem: metadados.imagem || null, idVariante: idVar, varianteNome: metadados.varianteNome || null, stock };
+    itens.push(item);
+  }
+  const limite = limiteStockItem(item);
+  const desejada = item.quantidade + qtd;
+  item.quantidade = Math.min(desejada, limite);
+  if(item.quantidade < 1){
+    guardarCarrinho(itens.filter(i => i !== item));
+    mostrarToast(tr('Indisponível'));
+    renderizarCarrinho();
+    return false;
+  }
   guardarCarrinho(itens);
-  mostrarToast(`${nome} adicionado ao carrinho`);
+  try{ sessionStorage.removeItem('lumina_carrinho_sync'); }catch(e){}
+  mostrarToast(desejada > limite ? textoStockLimite(limite) : `${nome} ${tr('adicionado ao carrinho')}`);
+  renderizarCarrinho();
+  revalidarCupaoCarrinho();
+  return true;
+}
+function definirQuantidadeCarrinho(chave, nova){
+  const itens = lerCarrinho();
+  const item = itens.find(i => chaveItemCarrinho(i) === chave);
+  if(!item) return;
+  let q = Math.floor(Number(nova));
+  if(!Number.isFinite(q) || q < 1) q = 1;
+  const limite = limiteStockItem(item);
+  if(q > limite){ q = limite; mostrarToast(textoStockLimite(limite)); }
+  item.quantidade = Math.max(1, q);
+  guardarCarrinho(itens);
+  renderizarCarrinho();
+  revalidarCupaoCarrinho();
+}
+function alterarQuantidadeCarrinho(chave, delta){
+  const item = lerCarrinho().find(i => chaveItemCarrinho(i) === chave);
+  if(item) definirQuantidadeCarrinho(chave, item.quantidade + delta);
+}
+function removerItemCarrinho(chave){
+  guardarCarrinho(lerCarrinho().filter(i => chaveItemCarrinho(i) !== chave));
+  renderizarCarrinho();
+  revalidarCupaoCarrinho();
+}
+function esvaziarCarrinho(){
+  try{ localStorage.removeItem(CARRINHO_CHAVE); localStorage.removeItem(CUPAO_CHAVE); }catch(e){}
+  atualizarContadorCarrinho();
+}
+
+// ---------- Cupão (partilhado entre carrinho e checkout) ----------
+function lerCupao(){
+  try{ const c = JSON.parse(localStorage.getItem(CUPAO_CHAVE)); return c && c.codigo ? c : null; }catch(e){ return null; }
+}
+function guardarCupao(c){
+  try{ c ? localStorage.setItem(CUPAO_CHAVE, JSON.stringify(c)) : localStorage.removeItem(CUPAO_CHAVE); }catch(e){}
+}
+async function validarCupaoCarrinho(codigo){
+  const subtotal = subtotalCarrinho();
+  if(subtotal <= 0) throw new Error(tr('O seu carrinho está vazio.'));
+  const r = await apiFetch('/checkout/validar-cupao', { method:'POST', body: JSON.stringify({ codigo, subtotalEUR: subtotal }) });
+  guardarCupao({ codigo: r.codigo, descontoEUR: Number(r.descontoEUR || 0) });
+  return r;
+}
+let _cupaoTimer = null;
+function revalidarCupaoCarrinho(){
+  const c = lerCupao();
+  if(!c) return;
+  clearTimeout(_cupaoTimer);
+  _cupaoTimer = setTimeout(async () => {
+    try{ await validarCupaoCarrinho(c.codigo); }
+    catch(e){ guardarCupao(null); mostrarMensagemCupao(e.message, true); }
+    renderizarPaginaCarrinho();
+  }, 400);
+}
+function mostrarMensagemCupao(texto, erro){
+  const el = document.getElementById('cp-cupao-msg');
+  if(!el) return;
+  el.textContent = texto || '';
+  el.style.color = erro ? '#B14B33' : '#2E7D4F';
+}
+
+// ---------- Sincronizar o carrinho com o catálogo (preço, stock, variantes) ----------
+async function sincronizarCarrinhoComCatalogo(opcoes = {}){
+  const avisos = [];
+  const itens = lerCarrinho();
+  if(!itens.length || !window.LUMINA_API_BASE_URL) return avisos;
+  try{
+    const ultimo = Number(sessionStorage.getItem('lumina_carrinho_sync') || 0);
+    if(!opcoes.forcar && Date.now() - ultimo < 60000) return avisos;
+  }catch(e){}
+  const ids = [...new Set(itens.map(i => String(i.produtoId)))];
+  const catalogo = {};
+  await Promise.all(ids.map(async id => {
+    try{ catalogo[id] = { p: await apiFetch('/produtos/' + encodeURIComponent(id)) }; }
+    catch(e){ catalogo[id] = { naoEncontrado: /n[ãa]o encontrado|inv[áa]lido/i.test(String(e.message || '')) }; }
+  }));
+  let alterado = false;
+  const resultado = [];
+  for(const item of itens){
+    const entrada = catalogo[String(item.produtoId)];
+    if(!entrada || (!entrada.p && !entrada.naoEncontrado)){ resultado.push(item); continue; } // erro de rede: não mexer
+    if(entrada.naoEncontrado){ avisos.push(`${item.nome}: ${tr('já não está disponível e foi removido do carrinho.')}`); alterado = true; continue; }
+    const p = entrada.p;
+    const base = Number(p.precoAtualEUR ?? p.precoVendaEUR ?? item.preco);
+    let preco = base, stock = Number(p.stockDisponivel ?? 0), varianteNome = item.varianteNome || null;
+    if(item.idVariante){
+      const v = (p.variantes || []).find(x => String(x.id) === String(item.idVariante));
+      if(!v){ avisos.push(`${item.nome}: ${tr('a opção escolhida já não está disponível e o produto foi removido do carrinho.')}`); alterado = true; continue; }
+      preco = base + Number(v.preco_extra_eur || 0);
+      stock = Number(v.stock ?? 0);
+      varianteNome = v.valor_opcao || v.nome || varianteNome;
+    }else if(p.temVariantes){
+      avisos.push(`${item.nome}: ${tr('escolha uma opção na página do produto. O artigo foi removido do carrinho.')}`); alterado = true; continue;
+    }
+    if(!(stock > 0)){ avisos.push(`${item.nome}: ${tr('está esgotado e foi removido do carrinho.')}`); alterado = true; continue; }
+    const novo = { ...item, nome: p.nome || item.nome, stock, varianteNome, imagem: item.imagem || p.imagem_principal || null };
+    if(Math.abs(preco - item.preco) > 0.004){ novo.preco = Number(preco.toFixed(2)); avisos.push(`${novo.nome}: ${tr('o preço foi atualizado.')}`); alterado = true; }
+    if(novo.quantidade > stock){ novo.quantidade = Math.min(stock, CARRINHO_MAX_QTD); avisos.push(`${novo.nome}: ${textoStockLimite(stock)}`); alterado = true; }
+    if(novo.stock !== item.stock || novo.varianteNome !== item.varianteNome || novo.nome !== item.nome || novo.imagem !== item.imagem) alterado = true;
+    resultado.push(novo);
+  }
+  try{ sessionStorage.setItem('lumina_carrinho_sync', String(Date.now())); }catch(e){}
+  if(alterado){ guardarCarrinho(resultado); renderizarCarrinho(); }
+  if(avisos.length){
+    const caixa = document.getElementById('carrinho-avisos') || document.getElementById('ck-avisos');
+    if(caixa){ caixa.replaceChildren(...avisos.map(a => { const p = document.createElement('p'); p.textContent = a; return p; })); caixa.hidden = false; }
+    else mostrarToast(avisos[0]);
+  }
+  return avisos;
+}
+
+// ---------- Renderização do carrinho (drawer e página) ----------
+function htmlItemCarrinho(item){
+  const chave = chaveItemCarrinho(item);
+  const img = safeImageUrl(item.imagem);
+  const link = '/produto.html?id=' + encodeURIComponent(item.produtoId);
+  const limite = limiteStockItem(item);
+  const q = item.quantidade;
+  return `<div class="linha-carrinho" data-chave="${escHtml(chave)}">
+    <a class="miniatura-carrinho" href="${link}" tabindex="-1" aria-hidden="true">${img ? `<img src="${escHtml(img)}" alt="" loading="lazy">` : ''}</a>
+    <div class="info-carrinho">
+      <a class="nome-carrinho" href="${link}">${escHtml(item.nome)}</a>
+      ${item.varianteNome ? `<div class="variante-carrinho">${escHtml(item.varianteNome)}</div>` : ''}
+      <div class="preco-unit-carrinho">${moedaCarrinho(item.preco)}</div>
+      <div class="controlos-carrinho">
+        <div class="stepper-qtd" role="group" aria-label="${escHtml(tr('Quantidade'))}">
+          <button type="button" data-acao="menos" aria-label="${escHtml(tr('Diminuir quantidade'))}"${q <= 1 ? ' disabled' : ''}>−</button>
+          <input type="number" inputmode="numeric" min="1" max="${limite}" value="${q}" data-acao="qtd" aria-label="${escHtml(tr('Quantidade'))}">
+          <button type="button" data-acao="mais" aria-label="${escHtml(tr('Aumentar quantidade'))}"${q >= limite ? ' disabled' : ''}>+</button>
+        </div>
+        <button type="button" class="remover-item-btn" data-acao="remover">${escHtml(tr('Remover'))}</button>
+      </div>
+    </div>
+    <div class="total-linha-carrinho">${moedaCarrinho(item.preco * q)}</div>
+  </div>`;
+}
+function ligarEventosCarrinho(container){
+  if(!container || container.dataset.carrinhoLigado) return;
+  container.dataset.carrinhoLigado = '1';
+  container.addEventListener('click', e => {
+    const b = e.target.closest('button[data-acao]');
+    const linha = b && b.closest('[data-chave]');
+    if(!b || !linha) return;
+    const chave = linha.dataset.chave;
+    if(b.dataset.acao === 'mais') alterarQuantidadeCarrinho(chave, 1);
+    else if(b.dataset.acao === 'menos') alterarQuantidadeCarrinho(chave, -1);
+    else if(b.dataset.acao === 'remover') removerItemCarrinho(chave);
+  });
+  container.addEventListener('change', e => {
+    const campo = e.target.closest('input[data-acao="qtd"]');
+    const linha = campo && campo.closest('[data-chave]');
+    if(campo && linha) definirQuantidadeCarrinho(linha.dataset.chave, campo.value);
+  });
+}
+function renderizarDrawerCarrinho(){
+  const container = document.querySelector('.itens-drawer');
+  const rodape = document.querySelector('.rodape-drawer');
+  if(!container) return;
+  ligarEventosCarrinho(container);
+  const itens = lerCarrinho();
+  if(itens.length === 0){
+    container.innerHTML = `<p class="carrinho-vazio">${escHtml(tr('O seu carrinho está vazio.'))}</p>`;
+    if(rodape) rodape.style.display = 'none';
+    return;
+  }
+  if(rodape){
+    rodape.style.display = 'block';
+    if(!rodape.querySelector('.ver-carrinho-link')){
+      const a = document.createElement('a');
+      a.className = 'ver-carrinho-link'; a.href = '/carrinho.html'; a.textContent = tr('Ver carrinho');
+      rodape.appendChild(a);
+    }
+  }
+  container.innerHTML = itens.map(htmlItemCarrinho).join('');
+  const spanSubtotal = document.querySelector('.valor-subtotal');
+  if(spanSubtotal) spanSubtotal.textContent = moedaCarrinho(subtotalCarrinho(itens));
+}
+function renderizarCarrinho(){
   renderizarDrawerCarrinho();
+  renderizarPaginaCarrinho();
+  atualizarContadorCarrinho();
 }
 
 // ---------- Carregar produtos reais da API (loja.html e index.html) ----------
@@ -42,7 +261,7 @@ function cardProduto(p){
       <div class="preco-produto-adminfront">${promo?`<del class="preco-anterior" data-lumina-eur="${venda}">${window.LUMINA?window.LUMINA.money(venda):venda.toFixed(2)+' €'}</del>`:''}<div class="preco" data-lumina-eur="${preco}">${window.LUMINA?window.LUMINA.money(preco):preco.toFixed(2)+' €'}</div></div>
       ${indisponivel?'<small class="produto-stock-indisponivel">Indisponível</small>':''}</div>
     </a>
-    ${indisponivel?'':`<button class="botao-add-rapido" data-id="${p.id}" data-nome="${escHtml(p.nome)}" data-preco="${preco}" data-imagem="${encodeURIComponent(p.imagemPrincipal||'')}">Adicionar ao carrinho</button>`}
+    ${indisponivel?'':(p.temVariantes?`<a class="botao-add-rapido botao-add-rapido-link" href="/produto.html?id=${encodeURIComponent(p.id)}">Escolher opção</a>`:`<button class="botao-add-rapido" data-id="${p.id}" data-nome="${escHtml(p.nome)}" data-preco="${preco}" data-stock="${Number(p.stockDisponivel??p.stock??0)}" data-imagem="${encodeURIComponent(p.imagemPrincipal||'')}">Adicionar ao carrinho</button>`)}
   </article>`;
 }
 async function carregarProdutosNaGrade(seletorContainer, opcoes={}){
@@ -59,7 +278,7 @@ async function carregarProdutosNaGrade(seletorContainer, opcoes={}){
     const produtos=await apiFetch('/produtos'+(q.toString()?'?'+q:'') );
     if(!produtos.length){container.innerHTML='<p class="catalogo-vazio">Ainda não há produtos publicados nesta seleção.</p>';return;}
     container.innerHTML=produtos.map(cardProduto).join('');
-    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
+    container.querySelectorAll('button.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||''),stock:botao.dataset.stock});}));
   }catch(e){console.error(e);container.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';}
 }
 function obterFiltrosLoja(){
@@ -82,35 +301,10 @@ async function carregarLojaComFiltros(){
     produtos=produtos.filter(p=>match(p,'tipoPele',f.pele)||!f.pele.length).filter(p=>match(p,'tipoCabelo',f.cabelo)||!f.cabelo.length);
     container.innerHTML=produtos.length?produtos.map(cardProduto).join(''):'<p class="catalogo-vazio">Não existem produtos para os filtros selecionados.</p>';
     const contador=document.querySelector('[data-contador-produtos]');if(contador)contador.textContent=`${produtos.length} ${produtos.length===1?'produto':'produtos'}`;
-    container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});}));
+    container.querySelectorAll('button.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||''),stock:botao.dataset.stock});}));
   }catch(e){container.innerHTML='<p class="catalogo-vazio">Não foi possível carregar o catálogo neste momento.</p>';}
 }
 function iniciarFiltrosLoja(){document.querySelectorAll('.filtros input').forEach(i=>i.addEventListener('change',carregarLojaComFiltros));document.querySelector('.barra-loja select')?.addEventListener('change',carregarLojaComFiltros);}
-
-function renderizarDrawerCarrinho(){
-  const container = document.querySelector('.itens-drawer');
-  const rodape = document.querySelector('.rodape-drawer');
-  if(!container) return;
-  const itens = lerCarrinho();
-  if(itens.length === 0){
-    container.innerHTML = '<p class="carrinho-vazio">O seu carrinho está vazio.</p>';
-    if(rodape) rodape.style.display = 'none';
-    return;
-  }
-  if(rodape) rodape.style.display = 'block';
-  container.innerHTML = itens.map(item => `
-    <div class="item-drawer">
-      <div class="miniatura-item">${safeImageUrl(item.imagem) ? `<img src="${escHtml(safeImageUrl(item.imagem))}" alt="" loading="lazy">` : ''}</div>
-      <div style="flex:1">
-        <div style="font-size:14px;margin-bottom:4px">${escHtml(item.nome)}</div>
-        <div style="font-size:13px;color:#8A7A70">Qtd: ${item.quantidade} · €${(item.preco * item.quantidade).toFixed(2)}</div>
-      </div>
-    </div>
-  `).join('');
-  const subtotal = itens.reduce((soma, i) => soma + i.preco * i.quantidade, 0);
-  const spanSubtotal = document.querySelector('.valor-subtotal');
-  if(spanSubtotal) spanSubtotal.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`;
-}
 
 // ---------- Toast ----------
 function mostrarToast(texto){
@@ -131,6 +325,7 @@ function abrirCarrinho(){
   document.querySelector('.overlay-carrinho')?.classList.add('aberto');
   document.querySelector('.drawer-carrinho')?.classList.add('aberto');
   renderizarDrawerCarrinho();
+  sincronizarCarrinhoComCatalogo();
 }
 function fecharCarrinho(){
   document.querySelector('.overlay-carrinho')?.classList.remove('aberto');
@@ -216,9 +411,9 @@ async function carregarHeroReal(){
 // ---------- Página inicial: destaques, promoções e produtos normais ----------
 function homeCards(container, produtos){
   container.innerHTML = produtos.length ? produtos.map(cardProduto).join('') : '<p class="catalogo-vazio">Ainda não há produtos publicados nesta seleção.</p>';
-  container.querySelectorAll('.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{
+  container.querySelectorAll('button.botao-add-rapido').forEach(botao=>botao.addEventListener('click',e=>{
     e.preventDefault(); e.stopPropagation();
-    adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||'')});
+    adicionarAoCarrinho(botao.dataset.id,botao.dataset.nome,parseFloat(botao.dataset.preco),1,{imagem:decodeURIComponent(botao.dataset.imagem||''),stock:botao.dataset.stock});
   }));
 }
 
@@ -316,32 +511,50 @@ function iniciarFAQ(){
 function renderizarPaginaCarrinho(){
   const container = document.querySelector('.itens-pagina-carrinho');
   if(!container) return;
+  ligarEventosCarrinho(container);
   const itens = lerCarrinho();
-  if(itens.length === 0){
-    container.innerHTML = '<div class="estado-vazio">O seu carrinho está vazio. <a href="loja.html" style="color:var(--terracota-escuro)">Ver produtos</a></div>';
-  } else {
-    container.innerHTML = itens.map((item, i) => `
-      <div class="linha-item-carrinho">
-        <div class="miniatura-linha"></div>
-        <div>
-          <div style="font-size:15px;margin-bottom:4px">${escHtml(item.nome)}</div>
-          <div class="remover-item" onclick="removerDoCarrinho(${i})" style="cursor:pointer">Remover</div>
-        </div>
-        <div style="font-size:14px">Qtd: ${item.quantidade}</div>
-        <div style="font-weight:600">€${(item.preco * item.quantidade).toFixed(2)}</div>
-      </div>
-    `).join('');
+  const vazio = itens.length === 0;
+  container.innerHTML = vazio
+    ? `<div class="estado-vazio">${escHtml(tr('O seu carrinho está vazio.'))} <a href="/loja.html" style="color:var(--terracota-escuro)">${escHtml(tr('Ver produtos'))}</a></div>`
+    : itens.map(htmlItemCarrinho).join('');
+  const subtotal = subtotalCarrinho(itens);
+  const cupao = vazio ? null : lerCupao();
+  const desconto = cupao ? Math.min(subtotal, Number(cupao.descontoEUR || 0)) : 0;
+  const total = Math.max(0, subtotal - desconto);
+  document.querySelectorAll('.valor-subtotal-pagina').forEach(el => el.textContent = moedaCarrinho(subtotal));
+  document.querySelectorAll('.valor-total-pagina').forEach(el => el.textContent = moedaCarrinho(total));
+  const linha = document.getElementById('cp-desconto-linha');
+  if(linha){
+    linha.hidden = !(desconto > 0);
+    const v = document.getElementById('cp-desconto');
+    if(v) v.textContent = '− ' + moedaCarrinho(desconto);
   }
-  const subtotal = itens.reduce((s,i)=> s + i.preco*i.quantidade, 0);
-  document.querySelectorAll('.valor-subtotal-pagina').forEach(el => el.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`);
-  document.querySelectorAll('.valor-total-pagina').forEach(el => el.textContent = `${window.LUMINA?window.LUMINA.money(subtotal):"€"+subtotal.toFixed(2)}`);
+  const campo = document.getElementById('cp-cupao');
+  if(campo && cupao && document.activeElement !== campo) campo.value = cupao.codigo;
+  const btn = document.getElementById('cp-finalizar');
+  if(btn){ btn.classList.toggle('desativado', vazio); btn.setAttribute('aria-disabled', vazio ? 'true' : 'false'); }
 }
-function removerDoCarrinho(indice){
-  const itens = lerCarrinho();
-  itens.splice(indice,1);
-  guardarCarrinho(itens);
+function iniciarPaginaCarrinho(){
+  if(!document.querySelector('.itens-pagina-carrinho')) return;
   renderizarPaginaCarrinho();
+  document.getElementById('cp-finalizar')?.addEventListener('click', e => { if(!lerCarrinho().length) e.preventDefault(); });
+  const aplicar = document.getElementById('cp-aplicar-cupao'), campo = document.getElementById('cp-cupao');
+  const aplicarCupao = async () => {
+    const codigo = (campo.value || '').trim();
+    if(!codigo){ guardarCupao(null); mostrarMensagemCupao(tr('Cupão removido.'), false); renderizarPaginaCarrinho(); return; }
+    aplicar.disabled = true; mostrarMensagemCupao(tr('A validar…'), false);
+    try{ await validarCupaoCarrinho(codigo); mostrarMensagemCupao(tr('Cupão aplicado.'), false); }
+    catch(e){ guardarCupao(null); mostrarMensagemCupao(e.message, true); }
+    finally{ aplicar.disabled = false; renderizarPaginaCarrinho(); }
+  };
+  aplicar?.addEventListener('click', aplicarCupao);
+  campo?.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); aplicarCupao(); } });
+  sincronizarCarrinhoComCatalogo({ forcar: true }).then(() => { if(lerCupao()) revalidarCupaoCarrinho(); });
 }
+// Atualiza preços quando a moeda muda ou as taxas de câmbio terminam de carregar
+window.addEventListener('lumina:currency-changed', () => renderizarCarrinho());
+window.addEventListener('lumina:currency-ready', () => renderizarCarrinho());
+document.addEventListener('keydown', e => { if(e.key === 'Escape') fecharCarrinho(); });
 
 // ---------- Checkout: escolher forma de pagamento ----------
 function iniciarPagamento(){
@@ -356,7 +569,7 @@ function iniciarPagamento(){
 
 document.addEventListener('DOMContentLoaded', () => {
   iniciarFAQ();
-  renderizarPaginaCarrinho();
+  iniciarPaginaCarrinho();
   iniciarPagamento();
 });
 

@@ -1,30 +1,31 @@
-  function escaparRastreio(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));}
-  const NOMES_ESTADO = {
-    novo: 'Pendente de confirmação', pago: 'Pago', cancelado: 'Cancelado', processando: 'Em processamento',
-    enviado_ao_agente: 'Enviado ao agente de carga', a_caminho: 'A caminho',
-    a_caminho_destino_final: 'A caminho do destino final', entregue: 'Entregue'
-  };
-  document.getElementById('rt-botao').addEventListener('click', async () => {
-    const numero = document.getElementById('rt-numero').value.trim();
+  function escaparRastreio(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  const T = t => (typeof tr === 'function' ? tr(t) : t);
+  async function rastrear(){
+    const numero = document.getElementById('rt-numero').value.trim().replace(/^#/, '');
     const resultadoEl = document.getElementById('rt-resultado');
-    if(!numero){ return; }
-    resultadoEl.innerHTML = '<p style="font-size:14px;color:#8A7A70">A procurar...</p>';
+    const botao = document.getElementById('rt-botao');
+    const email = document.getElementById('rt-email').value.trim();
+    if(!numero){ resultadoEl.textContent = T('Introduza o número da encomenda.'); return; }
+    if(!email){ resultadoEl.textContent = T('Introduza o e-mail usado na encomenda.'); return; }
+    resultadoEl.innerHTML = `<p style="font-size:14px;color:#8A7A70">${escaparRastreio(T('A procurar...'))}</p>`;
+    botao.disabled = true;
     try{
-      const email = document.getElementById('rt-email').value.trim();
-      if(!email){resultadoEl.textContent='Introduza o e-mail usado na encomenda.';return;}
-      const pedido = await apiFetch('/pedidos/rastrear/' + encodeURIComponent(numero)+'?email='+encodeURIComponent(email));
-      let linhasFornecedor = Object.entries(pedido.fornecedores || {}).map(([forn, dados]) => `
-        <div class="linha-resumo"><span>Fornecedor (${escaparRastreio(forn)})</span><span></span></div>
-        ${dados.rastreio1 ? `<div class="linha-resumo"><span>Rastreio (fornecedor → agente)</span><span>${escaparRastreio(dados.rastreio1)}</span></div>` : ''}
-        ${dados.rastreio2 ? `<div class="linha-resumo"><span>Rastreio (agente → destino)</span><span>${escaparRastreio(dados.rastreio2)}</span></div>` : ''}
-      `).join('');
-      resultadoEl.innerHTML = `
-        <div class="cartao-conta" style="text-align:left">
-          <h2>Encomenda #${pedido.numeroPedido}</h2>
-          <p style="margin-bottom:14px"><span class="badge-status enviado">${escaparRastreio(NOMES_ESTADO[pedido.estado] || pedido.estado)}</span></p>
-          ${linhasFornecedor || '<p style="font-size:13.5px;color:#8A7A70">Ainda sem informação de fornecedor (aguarda confirmação de pagamento).</p>'}
+      const pedido = await apiFetch('/pedidos/rastrear/' + encodeURIComponent(numero) + '?email=' + encodeURIComponent(email), {semRedirecionar:true});
+      const envios = (pedido.envios || []).map(e => `
+        <div class="envio-pedido"><strong>${escaparRastreio(T('Volume'))} ${e.volume}</strong>
+        ${e.rastreio1 ? `<div class="linha-dado"><span class="rotulo-dado">${escaparRastreio(T('Código de rastreio'))}</span><span class="valor-dado">${escaparRastreio(e.rastreio1)}</span></div>` : ''}
+        ${e.rastreio2 ? `<div class="linha-dado"><span class="rotulo-dado">${escaparRastreio(T('Rastreio local'))}</span><span class="valor-dado">${escaparRastreio(e.rastreio2)}</span></div>` : ''}
+        ${!e.rastreio1 && !e.rastreio2 ? `<p class="pequeno">${escaparRastreio(T('Ainda sem código de rastreio.'))}</p>` : ''}</div>`).join('');
+      resultadoEl.innerHTML = `<div class="cartao-conta" style="text-align:left" id="rt-cartao">
+          <h2>${escaparRastreio(T('Encomenda'))} #${escaparRastreio(pedido.numeroPedido)}</h2>
+          <p style="margin-bottom:14px"><span class="badge-status ${classeEstadoPedido(pedido.estado)}">${escaparRastreio(estadoPT(pedido.estado))}</span></p>
+          <div id="rt-progresso"></div>
+          ${envios || `<p style="font-size:13.5px;color:#8A7A70">${escaparRastreio(T('Ainda sem informação de envio.'))}</p>`}
         </div>`;
+      if(window.LuminaPedido){ const pr = LuminaPedido.progresso(pedido.estado); if(pr) document.getElementById('rt-progresso').appendChild(pr); }
     }catch(e){
-      resultadoEl.textContent = 'Não foi possível encontrar essa encomenda: '+e.message;
-    }
-  });
+      resultadoEl.textContent = T('Não foi possível encontrar essa encomenda:') + ' ' + e.message;
+    }finally{ botao.disabled = false; }
+  }
+  document.getElementById('rt-botao').addEventListener('click', rastrear);
+  ['rt-numero','rt-email'].forEach(id => document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); rastrear(); } }));
