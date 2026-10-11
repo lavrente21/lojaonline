@@ -61,7 +61,7 @@
   // ---------- Métodos de pagamento ----------
   const NOMES_METODO = {transferencia:'Transferência bancária',multicaixa:'Multicaixa Express / referência',deposito:'Depósito bancário'};
   const NOTAS_METODO = {
-    transferencia:'Depois de confirmarmos os portes, receberá por e-mail o IBAN, o valor final e a referência a indicar na transferência.',
+    transferencia:'Ao registar a encomenda verá o IBAN, o valor e a referência a indicar na transferência. Depois envie o comprovativo.',
     multicaixa:'Depois de confirmarmos os portes, receberá por e-mail a entidade, o valor final e a referência a indicar.',
     deposito:'Depois de confirmarmos os portes, receberá por e-mail os dados bancários e o valor final a depositar.'
   };

@@ -33,7 +33,7 @@
     const msg = $c('conf-mensagem'), prazo = $c('conf-prazo');
     const base = {
       aguarda_confirmacao_portes: ['Recebemos a sua encomenda', 'Vamos confirmar os portes e enviar-lhe por e-mail o valor final e os dados de pagamento. Ainda não precisa de pagar.'],
-      aguarda_pagamento: ['Portes confirmados — falta o pagamento', 'Faça a transferência com os dados abaixo e envie o comprovativo.'],
+      aguarda_pagamento: ['Encomenda registada — falta o pagamento', 'Faça a transferência com os dados abaixo e envie o comprovativo. Depois de aprovado, a encomenda segue para envio.'],
       comprovativo_enviado: ['Comprovativo recebido', 'Estamos a verificar o seu pagamento.'],
       pago: ['Pagamento confirmado', 'Obrigado! Estamos a preparar a sua encomenda.'],
       cancelado: ['Encomenda cancelada', ''],
